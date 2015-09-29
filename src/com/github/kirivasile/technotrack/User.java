@@ -1,4 +1,4 @@
-package ru.mail.track.Vasilev.Kirill;
+package com.github.kirivasile.technotrack;
 
 /**
  * Created by Kirill on 29.09.2015.
