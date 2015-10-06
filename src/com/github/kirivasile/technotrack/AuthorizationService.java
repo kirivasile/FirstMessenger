@@ -66,7 +66,7 @@ public class AuthorizationService {
                 String password;
                 System.out.println("User found. Please enter your password");
                 password = reader.readLine();
-                if (currentUser.checkPassword(password)) {
+                if (currentUser.getPassword().equals(password)) {
                     System.out.println("Hello, " + name + "!");
                 } else {
                     System.out.println("Password is incorrect");

@@ -8,8 +8,7 @@ import java.util.Map;
  * Created by Kirill on 29.09.2015.
  */
 public class UserStore {
-    /*Чтобы уменьшить кол-во обращений к файлу, создал буффер, к которому будем обращаться при чтении.
-    При записи будем дополнительно записывать в файл */
+    /*To reduce the number of writings, I've created a local cache of users, which would be used for reading*/
     private Map<String, User> bufferedUsers;
     String filePath;
     File userDb;

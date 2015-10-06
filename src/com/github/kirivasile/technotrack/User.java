@@ -20,10 +20,6 @@ public class User implements Serializable {
         return name;
     }
 
-    public boolean checkPassword(String password) {
-        return this.password.equals(password);
-    }
-
     String getPassword() {
         return password;
     }
