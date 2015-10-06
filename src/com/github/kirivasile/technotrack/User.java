@@ -1,10 +1,13 @@
 package com.github.kirivasile.technotrack;
 
+import java.io.Serializable;
+
 /**
  * Created by Kirill on 29.09.2015.
  */
-public class User {
-    private String name, password;
+public class User implements Serializable {
+    private String name;
+    private String password;
 
     public User() {}
 
@@ -19,5 +22,9 @@ public class User {
 
     public boolean checkPassword(String password) {
         return this.password.equals(password);
+    }
+
+    String getPassword() {
+        return password;
     }
 }

@@ -1,5 +1,6 @@
 package com.github.kirivasile.technotrack;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,23 +8,59 @@ import java.util.Map;
  * Created by Kirill on 29.09.2015.
  */
 public class UserStore {
-    private Map<String, User> users;
+    /*Чтобы уменьшить кол-во обращений к файлу, создал буффер, к которому будем обращаться при чтении.
+    При записи будем дополнительно записывать в файл */
+    private Map<String, User> bufferedUsers;
+    String filePath;
+    File userDb;
 
     public UserStore() {
-        users = new HashMap<>();
+        bufferedUsers = new HashMap<>();
+        filePath = "users.db";
+        userDb = new File(filePath);
+        try {
+            if (!userDb.exists()) {
+                userDb.createNewFile();
+            }
+            try (FileInputStream reader = new FileInputStream(userDb.getAbsolutePath())) {
+                if (reader.available() == 0) {
+                    return;
+                }
+                ObjectInputStream objReader = new ObjectInputStream(reader);
+                while (reader.available() > 0) {
+                    User buf = (User)objReader.readObject();
+                    bufferedUsers.put(buf.getName(), buf);
+                }
+            }
+            catch (Exception e) {
+                System.err.println("Error in reading from file: " + e.toString());
+            }
+
+        } catch (IOException e) {
+            System.err.println("IOException in creating file");
+        }
     }
 
-    public User getUser(String name) throws NullPointerException {
+    public User getUser(String name) {
         if (name == null) {
-            throw new NullPointerException();
+            return null;
         }
-        return users.get(name);
+        return bufferedUsers.get(name);
     }
 
-    public void addUser(User user) throws NullPointerException {
+    public void addUser(User user) {
         if (user == null) {
-            throw new NullPointerException();
+            System.out.println("Can't add user");
+            return;
         }
-        users.put(user.getName(), user);
+        bufferedUsers.put(user.getName(), user);
+        try (FileOutputStream writer = new FileOutputStream(userDb.getAbsolutePath())) {
+            ObjectOutputStream objWriter = new ObjectOutputStream(writer);
+            for (Map.Entry<String, User> pair : bufferedUsers.entrySet()) {
+                objWriter.writeObject(pair.getValue());
+            }
+        } catch (IOException e) {
+            System.err.println("IOException in writing to file " + e.getMessage());
+        }
     }
 }

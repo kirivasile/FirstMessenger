@@ -5,7 +5,8 @@ package com.github.kirivasile.technotrack;
  */
 public class MessengerMain {
     public static void main(String[] args) {
-        AuthorizationService service = new AuthorizationService(new UserStore());
+        UserStore userStore = new UserStore();
+        AuthorizationService service = new AuthorizationService(userStore);
         service.run();
     }
 }
