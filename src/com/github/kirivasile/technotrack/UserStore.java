@@ -9,32 +9,31 @@ import java.util.Map;
  */
 public class UserStore {
     /*To reduce the number of writings, I've created a local cache of users, which would be used for reading*/
-    private Map<String, User> bufferedUsers;
-    String filePath;
-    File userDb;
+    private Map<String, User> users;
+    File userList;
 
     public UserStore() {
-        bufferedUsers = new HashMap<>();
-        filePath = "users.db";
-        userDb = new File(filePath);
+        users = new HashMap<>();
+        userList = new File("users.db");
         try {
-            if (!userDb.exists()) {
-                userDb.createNewFile();
+            if (!userList.exists()) {
+                userList.createNewFile();
             }
-            try (FileInputStream reader = new FileInputStream(userDb.getAbsolutePath())) {
-                if (reader.available() == 0) {
-                    return;
+            try (BufferedReader reader = new BufferedReader(new FileReader(userList.getAbsolutePath()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parsedLine = line.split(", ");
+                    if (parsedLine.length != 2) {
+                        System.err.println("Incorrect information read");
+                        return;
+                    }
+                    String name = parsedLine[0];
+                    String password = parsedLine[1];
+                    users.put(name, new User(name, password));
                 }
-                ObjectInputStream objReader = new ObjectInputStream(reader);
-                while (reader.available() > 0) {
-                    User buf = (User)objReader.readObject();
-                    bufferedUsers.put(buf.getName(), buf);
-                }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.err.println("Error in reading from file: " + e.toString());
             }
-
         } catch (IOException e) {
             System.err.println("IOException in creating file");
         }
@@ -44,7 +43,7 @@ public class UserStore {
         if (name == null) {
             return null;
         }
-        return bufferedUsers.get(name);
+        return users.get(name);
     }
 
     public void addUser(User user) {
@@ -52,14 +51,13 @@ public class UserStore {
             System.out.println("Can't add user");
             return;
         }
-        bufferedUsers.put(user.getName(), user);
-        try (FileOutputStream writer = new FileOutputStream(userDb.getAbsolutePath())) {
-            ObjectOutputStream objWriter = new ObjectOutputStream(writer);
-            for (Map.Entry<String, User> pair : bufferedUsers.entrySet()) {
-                objWriter.writeObject(pair.getValue());
+        users.put(user.getName(), user);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(userList.getAbsolutePath()))) {
+            for (Map.Entry<String, User> pair : users.entrySet()) {
+                writer.write(pair.getKey() + ", " + pair.getValue().getPassword() + "\n");
             }
-        } catch (IOException e) {
-            System.err.println("IOException in writing to file " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error in writing to file: " + e.toString());
         }
     }
 }
