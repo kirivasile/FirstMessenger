@@ -46,8 +46,16 @@ public class AuthorizationService {
             if (currentUser != null) {
                 System.out.println("Sorry, but user with this name has already registered");
             } else {
-                System.out.println("Please enter your password");
-                String password = reader.readLine();
+                Console console = System.console();
+                String password;
+                if (console == null) {
+                    //in IDE
+                    password = reader.readLine();
+                } else {
+                    //in Console
+                    char[] passwd = console.readPassword("[%s]", "Password:");
+                    password = passwd.toString();
+                }
                 userStore.addUser(new User(name, password));
                 System.out.println("User was successfully signed up");
             }
@@ -63,9 +71,17 @@ public class AuthorizationService {
         if (name != null) {
             User currentUser = userStore.getUser(name);
             if (currentUser != null) {
+                System.out.println("User found. ");
+                Console console = System.console();
                 String password;
-                System.out.println("User found. Please enter your password");
-                password = reader.readLine();
+                if (console == null) {
+                    //in IDE
+                    password = reader.readLine();
+                } else {
+                    //in Console
+                    char[] passwd = console.readPassword("[%s]", "Password:");
+                    password = passwd.toString();
+                }
                 if (currentUser.getPassword().equals(password)) {
                     System.out.println("Hello, " + name + "!");
                 } else {
