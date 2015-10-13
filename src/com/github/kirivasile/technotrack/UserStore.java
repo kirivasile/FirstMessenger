@@ -28,8 +28,8 @@ public class UserStore {
                         return;
                     }
                     String name = parsedLine[0];
-                    String password = parsedLine[1];
-                    users.put(name, new User(name, password));
+                    String passwordHash = parsedLine[1];
+                    users.put(name, new User(name, passwordHash));
                 }
             } catch (Exception e) {
                 System.err.println("Error in reading from file: " + e.toString());
@@ -51,7 +51,9 @@ public class UserStore {
             System.out.println("Can't add user");
             return;
         }
-        users.put(user.getName(), user);
+        int hash = user.getPassword().hashCode();
+        User input = new User(user.getName(), Integer.toString(hash));
+        users.put(user.getName(), input);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(userList.getAbsolutePath()))) {
             for (Map.Entry<String, User> pair : users.entrySet()) {
                 writer.write(pair.getKey() + ", " + pair.getValue().getPassword() + "\n");

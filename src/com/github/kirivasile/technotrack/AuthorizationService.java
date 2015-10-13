@@ -50,6 +50,7 @@ public class AuthorizationService {
                 String password;
                 if (console == null) {
                     //in IDE
+                    System.out.print("Password: ");
                     password = reader.readLine();
                 } else {
                     //in Console
@@ -76,13 +77,14 @@ public class AuthorizationService {
                 String password;
                 if (console == null) {
                     //in IDE
+                    System.out.print("Password: ");
                     password = reader.readLine();
                 } else {
                     //in Console
                     char[] passwd = console.readPassword("[%s]", "Password:");
                     password = passwd.toString();
                 }
-                if (currentUser.getPassword().equals(password)) {
+                if (currentUser.getPassword().equals(Integer.toString(password.hashCode()))) {
                     System.out.println("Hello, " + name + "!");
                 } else {
                     System.out.println("Password is incorrect");
