@@ -1,5 +1,6 @@
 package com.github.kirivasile.technotrack;
 
+
 import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class AuthorizationService {
         this.userStore = userStore;
     }
 
-    public void run() {
+    /*public void run(BufferedReader reader) {
         String command;
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             System.out.println("Hello. Do you want to sign up or sign in? Type IN or UP. ");
@@ -35,9 +36,10 @@ public class AuthorizationService {
         } catch (Exception e) {
             System.out.println("Exception caught: " + e.toString());
         }
-    }
 
-    private void registerUser(BufferedReader reader) throws IOException {
+    }*/
+
+    public void registerUser(BufferedReader reader) throws IOException {
         String name;
         System.out.println("Signing up. Please enter your name.");
         name = reader.readLine();
@@ -59,41 +61,38 @@ public class AuthorizationService {
                 }
                 userStore.addUser(new User(name, password));
                 System.out.println("User was successfully signed up");
+                /*CommandHandler commandHandler = new CommandHandler();
+                commandHandler.run(reader);*/
             }
         } else {
             System.out.println("Incorrect name");
         }
     }
 
-    private void authorizeUser(BufferedReader reader) throws IOException {
-        String name;
-        System.out.println("Signing in. Please enter your name.");
-        name = reader.readLine();
-        if (name != null) {
-            User currentUser = userStore.getUser(name);
-            if (currentUser != null) {
-                System.out.println("User found. ");
-                Console console = System.console();
-                String password;
-                if (console == null) {
-                    //in IDE
-                    System.out.print("Password: ");
-                    password = reader.readLine();
-                } else {
-                    //in Console
-                    char[] passwd = console.readPassword("[%s]", "Password:");
-                    password = passwd.toString();
-                }
-                if (currentUser.getPassword().equals(Integer.toString(password.hashCode()))) {
-                    System.out.println("Hello, " + name + "!");
-                } else {
-                    System.out.println("Password is incorrect");
-                }
+    public void authorizeUser(String name, String password) throws IOException {
+        User currentUser = userStore.getUser(name);
+        if (currentUser != null) {
+            /*System.out.println("User found. ");
+            Console console = System.console();
+            String password;
+            if (console == null) {
+                //in IDE
+                System.out.print("Password: ");
+                password = reader.readLine();
             } else {
-                System.out.println("Sorry, but we didn't find user with this name: " + name);
+                //in Console
+                char[] passwd = console.readPassword("[%s]", "Password:");
+                password = passwd.toString();
+            }*/
+            if (currentUser.getPassword().equals(Integer.toString(password.hashCode()))) {
+                System.out.println("Hello, " + name + "!");
+                /*CommandHandler commandHandler = new CommandHandler();
+                commandHandler.run(reader);*/
+            } else {
+                System.out.println("Password is incorrect");
             }
         } else {
-            System.out.println("Incorrect name");
+            System.out.println("Sorry, but we didn't find user with this name: " + name);
         }
     }
 }

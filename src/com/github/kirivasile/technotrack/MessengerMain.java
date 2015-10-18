@@ -5,8 +5,10 @@ package com.github.kirivasile.technotrack;
  */
 public class MessengerMain {
     public static void main(String[] args) {
-        UserStore userStore = new UserStore();
+        /*UserStore userStore = new UserStore();
         AuthorizationService service = new AuthorizationService(userStore);
-        service.run();
+        service.run();*/
+        CommandHandler commandHandler = new CommandHandler();
+        commandHandler.run();
     }
 }
