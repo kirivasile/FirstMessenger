@@ -18,14 +18,14 @@ public class HistoryCommand implements Command {
             System.out.println("Please login before using this command");
         }
         if (args.length == 1) {
-            for (Map.Entry<Calendar, Message> pair : session.getHistory().getMessages().entrySet()) {
+            for (Map.Entry<Calendar, Message> pair : session.getHistory().getMessagesMap().entrySet()) {
                 if (pair.getValue().checkAuthor(session.getCurrentUserName())) {
                     System.out.println(pair.getValue());
                 }
             }
         } else if (args.length == 2) {
             List<Message> listOfMessages = new ArrayList<>();
-            for (Map.Entry<Calendar, Message> pair : session.getHistory().getMessages().entrySet()) {
+            for (Map.Entry<Calendar, Message> pair : session.getHistory().getMessagesMap().entrySet()) {
                 if (pair.getValue().checkAuthor(session.getCurrentUserName())) {
                     listOfMessages.add(pair.getValue());
                 }
@@ -36,6 +36,8 @@ public class HistoryCommand implements Command {
             for (int i = listOfMessages.size() - 1, j = 0; j < minNum; --i, ++j) {
                 System.out.println(listOfMessages.get(i));
             }
+        } else {
+            System.out.println("Wrong number of arguments");
         }
     }
 

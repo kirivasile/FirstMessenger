@@ -23,6 +23,7 @@ public class CommandHandler {
         commands.put(new LoginCommand().toString(), new LoginCommand());
         commands.put(new UserCommand().toString(), new UserCommand());
         commands.put(new HistoryCommand().toString(), new HistoryCommand());
+        commands.put(new FindCommand().toString(), new FindCommand());
     }
 
     public void run() {

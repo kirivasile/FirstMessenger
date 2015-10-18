@@ -44,6 +44,19 @@ public class Message {
         String time = date.get(Calendar.HOUR_OF_DAY) + ":" +
                       date.get(Calendar.MINUTE) + ":" + date.get(Calendar.SECOND);
         return String.format("From: %s\nmessage: \"%s\"\ndate: %s, time: %s\n", from, message, dayMonthYear, time);
+    }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public String getTime() {
+        int day = date.get(Calendar.DATE);
+        int month = date.get(Calendar.MONTH);
+        int year = date.get(Calendar.YEAR);
+        String dayMonthYear = String.format("%d:%d:%d", day, month, year);
+        String time = date.get(Calendar.HOUR_OF_DAY) + ":" +
+                date.get(Calendar.MINUTE) + ":" + date.get(Calendar.SECOND);
+        return String.format("Date: %s, time: %s", dayMonthYear, time);
     }
 }

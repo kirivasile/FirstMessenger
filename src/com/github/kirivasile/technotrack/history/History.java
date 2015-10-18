@@ -67,7 +67,7 @@ public class History {
         }
     }
 
-    public Map<Calendar, Message> getMessages() {
+    public Map<Calendar, Message> getMessagesMap() {
         return messages;
     }
 }
