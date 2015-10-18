@@ -1,5 +1,7 @@
-package com.github.kirivasile.technotrack;
+package com.github.kirivasile.technotrack.authorization;
 
+
+import com.github.kirivasile.technotrack.session.Session;
 
 import java.io.BufferedReader;
 import java.io.Console;
@@ -18,7 +20,8 @@ public class AuthorizationService {
         this.userStore = userStore;
     }
 
-    public void registerUser(BufferedReader reader) throws IOException {
+    public void registerUser(Session session) throws IOException {
+        BufferedReader reader = session.getReader();
         String name;
         System.out.println("Signing up. Please enter your name.");
         name = reader.readLine();
@@ -38,7 +41,8 @@ public class AuthorizationService {
                     char[] passwd = console.readPassword("[%s]", "Password:");
                     password = passwd.toString();
                 }
-                userStore.addUser(new User(name, password));
+                userStore.addUser(new User(name, password, name));
+                session.setCurrentUserName(name);
                 System.out.println("User was successfully signed up");
             }
         } else {
@@ -46,10 +50,11 @@ public class AuthorizationService {
         }
     }
 
-    public void authorizeUser(String name, String password) throws IOException {
-        User currentUser = userStore.getUser(name);
-        if (currentUser != null) {
-            if (currentUser.getPassword().equals(Integer.toString(password.hashCode()))) {
+    public void authorizeUser(String name, String password, Session session) throws IOException {
+        User user = userStore.getUser(name);
+        if (user != null) {
+            if (user.getPassword().equals(Integer.toString(password.hashCode()))) {
+                session.setCurrentUserName(name);
                 System.out.println("Hello, " + name + "!");
             } else {
                 System.out.println("Password is incorrect");
@@ -57,5 +62,14 @@ public class AuthorizationService {
         } else {
             System.out.println("Sorry, but we didn't find user with this name: " + name);
         }
+    }
+
+    public boolean changeUserNick(String name, String newNickName) {
+        User user = userStore.getUser(name);
+        if (user == null) {
+            return false;
+        }
+        user.setNickname(newNickName);
+        return true;
     }
 }

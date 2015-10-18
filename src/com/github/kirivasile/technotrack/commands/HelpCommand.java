@@ -1,5 +1,7 @@
 package com.github.kirivasile.technotrack.commands;
 
+import com.github.kirivasile.technotrack.session.Session;
+
 import java.io.BufferedReader;
 
 /**
@@ -7,7 +9,7 @@ import java.io.BufferedReader;
  */
 public class HelpCommand implements Command {
     @Override
-    public void run(String[] args, BufferedReader reader) throws Exception {
+    public void run(String[] args, Session session) throws Exception {
         System.out.println("List of commands:\n" +
                            "  /login - sign up a user\n" +
                            "  /login <login> <password> - sign in with these parameters\n" +
