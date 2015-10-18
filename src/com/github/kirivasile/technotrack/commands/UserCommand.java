@@ -18,7 +18,7 @@ public class UserCommand implements Command {
         if (service.changeUserNick(session.getCurrentUserName(), newNickName)) {
             System.out.println("Now the nickname of user " + session.getCurrentUserName() + " is " + newNickName);
         } else {
-            System.out.println("Please login first");
+            System.out.println("Please login before using this command");
         }
     }
 

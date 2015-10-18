@@ -12,10 +12,13 @@ public class History {
 
     public History() {
         messages = new TreeMap<>();
-        historyFile = new File("history.db");
         try {
+            historyFile = new File("history.db");
             if (!historyFile.exists()) {
-                historyFile.createNewFile();
+                if (!historyFile.createNewFile()) {
+                    System.err.println("Unable to create history file");
+                    return;
+                }
             }
             try (BufferedReader reader = new BufferedReader(new FileReader(historyFile.getAbsolutePath()))) {
                 String line;
@@ -57,10 +60,14 @@ public class History {
     public void close() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(historyFile.getAbsolutePath()))) {
             for (Map.Entry<Calendar, Message> pair : messages.entrySet()) {
-                writer.write(pair.getValue().toString() + "\n");
+                writer.write(pair.getValue().toFileString() + "\n");
             }
         } catch (Exception e) {
             System.err.println("Error in writing to file: " + e.toString());
         }
+    }
+
+    public Map<Calendar, Message> getMessages() {
+        return messages;
     }
 }

@@ -2,10 +2,7 @@ package com.github.kirivasile.technotrack;
 
 import com.github.kirivasile.technotrack.authorization.AuthorizationService;
 import com.github.kirivasile.technotrack.authorization.UserStore;
-import com.github.kirivasile.technotrack.commands.Command;
-import com.github.kirivasile.technotrack.commands.HelpCommand;
-import com.github.kirivasile.technotrack.commands.LoginCommand;
-import com.github.kirivasile.technotrack.commands.UserCommand;
+import com.github.kirivasile.technotrack.commands.*;
 import com.github.kirivasile.technotrack.history.History;
 import com.github.kirivasile.technotrack.session.Session;
 
@@ -25,6 +22,7 @@ public class CommandHandler {
         commands.put(new HelpCommand().toString(), new HelpCommand());
         commands.put(new LoginCommand().toString(), new LoginCommand());
         commands.put(new UserCommand().toString(), new UserCommand());
+        commands.put(new HistoryCommand().toString(), new HistoryCommand());
     }
 
     public void run() {
