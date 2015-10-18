@@ -1,6 +1,7 @@
 package com.github.kirivasile.technotrack.session;
 
 import com.github.kirivasile.technotrack.authorization.AuthorizationService;
+import com.github.kirivasile.technotrack.history.History;
 
 import java.io.BufferedReader;
 
@@ -11,10 +12,12 @@ public class Session {
     private BufferedReader reader;
     private AuthorizationService authorizationService;
     private String currentUserName;
+    private History history;
 
-    public Session(BufferedReader reader, AuthorizationService authorizationService) {
+    public Session(BufferedReader reader, AuthorizationService authorizationService, History history) {
         this.reader = reader;
         this.authorizationService = authorizationService;
+        this.history = history;
     }
 
     public BufferedReader getReader() {
@@ -31,5 +34,9 @@ public class Session {
 
     public void setCurrentUserName(String currentUserName) {
         this.currentUserName = currentUserName;
+    }
+
+    public History getHistory() {
+        return history;
     }
 }

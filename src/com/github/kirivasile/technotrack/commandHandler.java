@@ -6,6 +6,7 @@ import com.github.kirivasile.technotrack.commands.Command;
 import com.github.kirivasile.technotrack.commands.HelpCommand;
 import com.github.kirivasile.technotrack.commands.LoginCommand;
 import com.github.kirivasile.technotrack.commands.UserCommand;
+import com.github.kirivasile.technotrack.history.History;
 import com.github.kirivasile.technotrack.session.Session;
 
 import java.io.BufferedReader;
@@ -30,7 +31,8 @@ public class CommandHandler {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             UserStore userStore = new UserStore();
             AuthorizationService service = new AuthorizationService(userStore);
-            Session session = new Session(reader, service);
+            History history = new History();
+            Session session = new Session(reader, service, history);
             while (true) {
                 System.out.print("$ ");
                 String command = reader.readLine();
@@ -45,9 +47,12 @@ public class CommandHandler {
                         continue;
                     }
                     commandClass.run(parsedCommand, session);
+                } else if (session.getCurrentUserName() != null) {
+                    history.addMessage(session.getCurrentUserName(), command);
                 }
             }
             userStore.close();
+            history.close();
         } catch (Exception e) {
             System.err.println("Exception in reading command " + e.toString());
         }
