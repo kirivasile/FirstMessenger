@@ -1,4 +1,4 @@
-package com.github.kirivasile.technotrack;
+package com.github.kirivasile.technotrack.authorization;
 
 import java.io.*;
 import java.util.HashMap;
@@ -7,10 +7,10 @@ import java.util.Map;
 /**
  * Created by Kirill on 29.09.2015.
  */
-public class UserStore {
+public class UserStore implements AutoCloseable {
     /*To reduce the number of writings, I've created a local cache of users, which would be used for reading*/
     private Map<String, User> users;
-    File userList;
+    private File userList;
 
     public UserStore() {
         users = new HashMap<>();
@@ -23,13 +23,14 @@ public class UserStore {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String[] parsedLine = line.split(", ");
-                    if (parsedLine.length != 2) {
+                    if (parsedLine.length != 3) {
                         System.err.println("Incorrect information read");
                         return;
                     }
                     String name = parsedLine[0];
                     String passwordHash = parsedLine[1];
-                    users.put(name, new User(name, passwordHash));
+                    String nick = parsedLine[2];
+                    users.put(name, new User(name, passwordHash, nick));
                 }
             } catch (Exception e) {
                 System.err.println("Error in reading from file: " + e.toString());
@@ -46,20 +47,32 @@ public class UserStore {
         return users.get(name);
     }
 
+    public boolean removeUser(String name, User user) {
+        return users.remove(name, user);
+    }
+
     public void addUser(User user) {
         if (user == null) {
             System.out.println("Can't add user");
             return;
         }
         int hash = user.getPassword().hashCode();
-        User input = new User(user.getName(), Integer.toString(hash));
+        User input = new User(user.getName(), Integer.toString(hash), user.getName());
         users.put(user.getName(), input);
+    }
+
+    @Override
+    public void close() throws Exception {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(userList.getAbsolutePath()))) {
             for (Map.Entry<String, User> pair : users.entrySet()) {
-                writer.write(pair.getKey() + ", " + pair.getValue().getPassword() + "\n");
+                String name = pair.getKey();
+                String hashPassword = pair.getValue().getPassword();
+                String nickname = pair.getValue().getNick();
+                writer.write(name + ", " + hashPassword + ", " + nickname + "\n");
             }
         } catch (Exception e) {
             System.err.println("Error in writing to file: " + e.toString());
         }
     }
+
 }
