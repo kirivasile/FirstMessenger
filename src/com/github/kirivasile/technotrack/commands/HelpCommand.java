@@ -15,6 +15,8 @@ public class HelpCommand implements Command {
                 "  /register <login> <password> - sign up a user\n" +
                 "  /login <login> <password> - sign in with these parameters\n" +
                 "  /user <nick> - change your nickname to \'nick\'\n" +
+                "  /user_info - get the information about you\n" +
+                "  /user_info <nick> - get the information about \'nick\'" +
                 "  /history <n> - show last n messages. Without parameter \'n\' show the full history\n" +
                 "  /find <regex> - find the message using regular expression \'regex\'\n" +
                 "  /exit - exit the program\n" +

@@ -3,7 +3,7 @@ package com.github.kirivasile.technotrack.net.server;
 import com.github.kirivasile.technotrack.authorization.AuthorizationService;
 import com.github.kirivasile.technotrack.authorization.UserStore;
 import com.github.kirivasile.technotrack.commands.*;
-import com.github.kirivasile.technotrack.history.History;
+import com.github.kirivasile.technotrack.history.MessageStore;
 import com.github.kirivasile.technotrack.session.Session;
 
 import java.io.*;
@@ -17,8 +17,9 @@ public class CommandHandler {
     private Map<String, Command> commands;
     private DataInputStream reader;
     private DataOutputStream writer;
+    private DataStore dataStore;
 
-    public CommandHandler(InputStream reader, OutputStream writer) {
+    public CommandHandler(InputStream reader, OutputStream writer, DataStore dataStore) {
         commands = new HashMap<>();
         commands.put(new HelpCommand().toString(), new HelpCommand());
         commands.put(new LoginCommand().toString(), new LoginCommand());
@@ -26,16 +27,17 @@ public class CommandHandler {
         commands.put(new HistoryCommand().toString(), new HistoryCommand());
         commands.put(new FindCommand().toString(), new FindCommand());
         commands.put(new RegisterCommand().toString(), new RegisterCommand());
+        commands.put(new UserInfoCommand().toString(), new UserInfoCommand());
         this.reader = new DataInputStream(reader);
         this.writer = new DataOutputStream(writer);
+        this.dataStore = dataStore;
     }
 
     public void run() {
         try {
-            UserStore userStore = new UserStore();
-            AuthorizationService service = new AuthorizationService(userStore);
-            History history = new History();
-            Session session = new Session(reader, writer, service, history);
+            AuthorizationService service = new AuthorizationService(dataStore.getUserStore());
+            MessageStore messageStore = dataStore.getMessageStore();
+            Session session = new Session(reader, writer, service, messageStore);
             while (true) {
                 String command = reader.readUTF();
                 if (command.equals("/exit")) {
@@ -50,12 +52,11 @@ public class CommandHandler {
                     }
                     commandClass.run(parsedCommand, session);
                 } else if (session.getCurrentUserName() != null) {
-                    history.addMessage(session.getCurrentUserName(), command);
+                    messageStore.addMessage(session.getCurrentUserName(), command);
                     writer.writeUTF("Message delivered");
                 }
             }
-            userStore.close();
-            history.close();
+            dataStore.close();
         } catch (Exception e) {
             System.err.println("Exception in reading command " + e.toString());
         }

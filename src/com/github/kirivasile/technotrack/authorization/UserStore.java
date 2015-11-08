@@ -29,7 +29,7 @@ public class UserStore implements AutoCloseable {
         }
     }
 
-    private void readDataFromFile(BufferedReader reader) throws Exception {
+    private synchronized void readDataFromFile(BufferedReader reader) throws Exception {
         String line;
         while ((line = reader.readLine()) != null) {
             String[] parsedLine = line.split(", ");
@@ -44,7 +44,7 @@ public class UserStore implements AutoCloseable {
         }
     }
 
-    private void writeDataToFile(BufferedWriter writer) throws Exception {
+    private synchronized void writeDataToFile(BufferedWriter writer) throws Exception {
         for (Map.Entry<String, User> pair : users.entrySet()) {
             String name = pair.getKey();
             String hashPassword = pair.getValue().getPassword();
@@ -53,18 +53,18 @@ public class UserStore implements AutoCloseable {
         }
     }
 
-    public User getUser(String name) {
+    public synchronized User getUser(String name) {
         if (name == null) {
             return null;
         }
         return users.get(name);
     }
 
-    public boolean removeUser(String name, User user) {
+    public synchronized boolean removeUser(String name, User user) {
         return users.remove(name, user);
     }
 
-    public void addUser(User user) {
+    public synchronized void addUser(User user) {
         if (user == null) {
             System.out.println("Can't add user");
             return;
@@ -76,11 +76,6 @@ public class UserStore implements AutoCloseable {
 
     @Override
     public synchronized void close() throws Exception {
-        try (BufferedReader reader = new BufferedReader(new FileReader(userList.getAbsolutePath()))) {
-            readDataFromFile(reader);
-        } catch (Exception e) {
-            System.err.println("Error in reading from file when closing: " + e.toString());
-        }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(userList.getAbsolutePath()))) {
             writeDataToFile(writer);
         } catch (Exception e) {

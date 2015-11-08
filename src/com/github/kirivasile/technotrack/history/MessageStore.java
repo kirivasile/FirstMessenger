@@ -6,11 +6,11 @@ import java.util.*;
 /**
  * Created by Kirill on 18.10.2015.
  */
-public class History {
+public class MessageStore {
     private Map<Calendar, Message> messages;
     private File historyFile;
 
-    public History() {
+    public MessageStore() {
         messages = new TreeMap<>();
         try {
             historyFile = new File("history.db");
@@ -30,22 +30,17 @@ public class History {
         }
     }
 
-    public void addMessage(String from, String message) {
+    public synchronized void addMessage(String from, String message) {
         Calendar date = new GregorianCalendar();
         Message input = new Message(from, message, date);
         messages.put(date, input);
     }
 
-    public Map<Calendar, Message> getMessagesMap() {
+    public synchronized Map<Calendar, Message> getMessagesMap() {
         return messages;
     }
 
-    public void close() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(historyFile.getAbsolutePath()))) {
-            readDataFromFile(reader);
-        } catch (Exception e) {
-            System.err.println("Error in reading from file: " + e.toString());
-        }
+    public synchronized void close() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(historyFile.getAbsolutePath()))) {
             writeDataToFile(writer);
         } catch (Exception e) {

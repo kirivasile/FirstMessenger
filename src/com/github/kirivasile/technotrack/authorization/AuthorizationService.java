@@ -1,6 +1,8 @@
 package com.github.kirivasile.technotrack.authorization;
 
 
+import com.github.kirivasile.technotrack.authorization.User;
+import com.github.kirivasile.technotrack.authorization.UserStore;
 import com.github.kirivasile.technotrack.session.Session;
 
 import java.io.*;
@@ -27,7 +29,9 @@ public class AuthorizationService {
             } else {
                 userStore.addUser(new User(name, password, name));
                 session.setCurrentUserName(name);
-                writer.writeUTF("User was successfully signed up");
+                String message = String.format("User was successfully signed up" +
+                                                "Login: %s, Password: %s", name, password);
+                writer.writeUTF(message);
             }
         } else {
             writer.writeUTF("Incorrect name/password");
@@ -56,5 +60,9 @@ public class AuthorizationService {
         }
         user.setNickname(newNickName);
         return true;
+    }
+
+    public User getUserInfo(String name) {
+        return userStore.getUser(name);
     }
 }

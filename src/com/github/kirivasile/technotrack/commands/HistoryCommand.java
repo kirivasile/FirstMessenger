@@ -22,7 +22,7 @@ public class HistoryCommand implements Command {
         }
         if (args.length == 1) {
             StringBuilder message = new StringBuilder();
-            for (Map.Entry<Calendar, Message> pair : session.getHistory().getMessagesMap().entrySet()) {
+            for (Map.Entry<Calendar, Message> pair : session.getMessageStore().getMessagesMap().entrySet()) {
                 if (pair.getValue().checkAuthor(session.getCurrentUserName())) {
                     message.append(pair.getValue());
                 }
@@ -30,7 +30,7 @@ public class HistoryCommand implements Command {
             writer.writeUTF(message.toString());
         } else if (args.length == 2) {
             List<Message> listOfMessages = new ArrayList<>();
-            for (Map.Entry<Calendar, Message> pair : session.getHistory().getMessagesMap().entrySet()) {
+            for (Map.Entry<Calendar, Message> pair : session.getMessageStore().getMessagesMap().entrySet()) {
                 if (pair.getValue().checkAuthor(session.getCurrentUserName())) {
                     listOfMessages.add(pair.getValue());
                 }
