@@ -1,30 +1,30 @@
 package com.github.kirivasile.technotrack.net.server;
 
-import com.github.kirivasile.technotrack.authorization.UserStore;
-import com.github.kirivasile.technotrack.history.MessageStore;
+import com.github.kirivasile.technotrack.authorization.FileUserStore;
+import com.github.kirivasile.technotrack.history.FileMessageStore;
 
 /**
  * Created by Kirill on 09.11.2015.
  */
 public class DataStore {
-    private UserStore userStore;
-    private MessageStore messageStore;
+    private FileUserStore fileUserStore;
+    private FileMessageStore fileMessageStore;
 
-    public DataStore(UserStore userStore, MessageStore messageStore) {
-        this.userStore = userStore;
-        this.messageStore = messageStore;
+    public DataStore(FileUserStore fileUserStore, FileMessageStore fileMessageStore) {
+        this.fileUserStore = fileUserStore;
+        this.fileMessageStore = fileMessageStore;
     }
 
-    public UserStore getUserStore() {
-        return userStore;
+    public FileUserStore getFileUserStore() {
+        return fileUserStore;
     }
 
-    public MessageStore getMessageStore() {
-        return messageStore;
+    public FileMessageStore getFileMessageStore() {
+        return fileMessageStore;
     }
 
     public void close() throws Exception {
-        userStore.close();
-        messageStore.close();
+        fileUserStore.close();
+        fileMessageStore.close();
     }
 }

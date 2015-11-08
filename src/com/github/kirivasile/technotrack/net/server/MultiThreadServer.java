@@ -1,7 +1,7 @@
 package com.github.kirivasile.technotrack.net.server;
 
-import com.github.kirivasile.technotrack.authorization.UserStore;
-import com.github.kirivasile.technotrack.history.MessageStore;
+import com.github.kirivasile.technotrack.authorization.FileUserStore;
+import com.github.kirivasile.technotrack.history.FileMessageStore;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -26,7 +26,7 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
         this.serverPort = serverPort;
         isStopped = false;
         clientThreads = new ArrayList<>();
-        dataStore = new DataStore(new UserStore(), new MessageStore());
+        dataStore = new DataStore(new FileUserStore(), new FileMessageStore());
     }
 
 

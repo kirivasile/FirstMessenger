@@ -23,7 +23,7 @@ public class FindCommand implements Command {
             return;
         }
         StringBuilder messageBuilder = new StringBuilder();
-        Map<Calendar, Message> messageMap = session.getMessageStore().getMessagesMap();
+        Map<Calendar, Message> messageMap = session.getFileMessageStore().getMessagesMap();
         for (Map.Entry<Calendar, Message> pair : messageMap.entrySet()) {
             if (pair.getValue().checkAuthor(session.getCurrentUserName())) {
                 String message = pair.getValue().getMessage();

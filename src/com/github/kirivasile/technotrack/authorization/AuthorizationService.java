@@ -1,8 +1,6 @@
 package com.github.kirivasile.technotrack.authorization;
 
 
-import com.github.kirivasile.technotrack.authorization.User;
-import com.github.kirivasile.technotrack.authorization.UserStore;
 import com.github.kirivasile.technotrack.session.Session;
 
 import java.io.*;
@@ -11,23 +9,23 @@ import java.io.*;
  * Created by Kirill on 29.09.2015.
  */
 public class AuthorizationService {
-    private UserStore userStore;
+    private FileUserStore fileUserStore;
 
     private AuthorizationService() {
     }
 
-    public AuthorizationService(UserStore userStore) {
-        this.userStore = userStore;
+    public AuthorizationService(FileUserStore fileUserStore) {
+        this.fileUserStore = fileUserStore;
     }
 
     public synchronized void registerUser(String name, String password, Session session) throws IOException {
         DataOutputStream writer = session.getWriter();
         if (name != null && password != null) {
-            User currentUser = userStore.getUser(name);
+            User currentUser = fileUserStore.getUser(name);
             if (currentUser != null) {
                 writer.writeUTF("Sorry, but user with this name has already registered");
             } else {
-                userStore.addUser(new User(name, password, name));
+                fileUserStore.addUser(new User(name, password, name));
                 session.setCurrentUserName(name);
                 String message = String.format("User was successfully signed up" +
                                                 "Login: %s, Password: %s", name, password);
@@ -40,7 +38,7 @@ public class AuthorizationService {
 
     public synchronized void authorizeUser(String name, String password, Session session) throws IOException {
         DataOutputStream writer = session.getWriter();
-        User user = userStore.getUser(name);
+        User user = fileUserStore.getUser(name);
         if (user != null) {
             if (user.getPassword().equals(Integer.toString(password.hashCode()))) {
                 session.setCurrentUserName(name);
@@ -54,7 +52,7 @@ public class AuthorizationService {
     }
 
     public boolean changeUserNick(String name, String newNickName) {
-        User user = userStore.getUser(name);
+        User user = fileUserStore.getUser(name);
         if (user == null) {
             return false;
         }
@@ -62,7 +60,22 @@ public class AuthorizationService {
         return true;
     }
 
+    public int changePassword(String name, String oldPassword, String newPassword) {
+        User user = fileUserStore.getUser(name);
+        if (user == null) {
+            return -1;
+        }
+        String userPassword = user.getPassword();
+        String oldPasswordHash = Integer.toString(oldPassword.hashCode());
+        if (userPassword.equals(oldPasswordHash)) {
+            user.setPassword(Integer.toString(newPassword.hashCode()));
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
     public User getUserInfo(String name) {
-        return userStore.getUser(name);
+        return fileUserStore.getUser(name);
     }
 }
