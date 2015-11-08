@@ -1,4 +1,4 @@
-package com.github.kirivasile.technotrack;
+package com.github.kirivasile.technotrack.net.server;
 
 import com.github.kirivasile.technotrack.authorization.AuthorizationService;
 import com.github.kirivasile.technotrack.authorization.UserStore;
@@ -6,8 +6,7 @@ import com.github.kirivasile.technotrack.commands.*;
 import com.github.kirivasile.technotrack.history.History;
 import com.github.kirivasile.technotrack.session.Session;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,25 +15,28 @@ import java.util.Map;
  */
 public class CommandHandler {
     private Map<String, Command> commands;
+    private DataInputStream reader;
+    private DataOutputStream writer;
 
-    public CommandHandler() {
+    public CommandHandler(InputStream reader, OutputStream writer) {
         commands = new HashMap<>();
         commands.put(new HelpCommand().toString(), new HelpCommand());
         commands.put(new LoginCommand().toString(), new LoginCommand());
         commands.put(new UserCommand().toString(), new UserCommand());
         commands.put(new HistoryCommand().toString(), new HistoryCommand());
         commands.put(new FindCommand().toString(), new FindCommand());
+        this.reader = new DataInputStream(reader);
+        this.writer = new DataOutputStream(writer);
     }
 
     public void run() {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+        try {
             UserStore userStore = new UserStore();
             AuthorizationService service = new AuthorizationService(userStore);
             History history = new History();
-            Session session = new Session(reader, service, history);
+            Session session = new Session(reader, writer, service, history);
             while (true) {
-                System.out.print("$ ");
-                String command = reader.readLine();
+                String command = reader.readUTF();
                 if (command.equals("/exit")) {
                     break;
                 }
@@ -42,7 +44,7 @@ public class CommandHandler {
                     String[] parsedCommand = command.split("\\s+");
                     Command commandClass = commands.get(parsedCommand[0]);
                     if (commandClass == null) {
-                        System.out.println("Wrong command");
+                        writer.writeUTF("Wrong command");
                         continue;
                     }
                     commandClass.run(parsedCommand, session);

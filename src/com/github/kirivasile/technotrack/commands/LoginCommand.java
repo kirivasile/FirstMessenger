@@ -11,7 +11,7 @@ import java.io.BufferedReader;
 public class LoginCommand implements Command {
     @Override
     public void run(String[] args, Session session) throws Exception {
-        BufferedReader reader = session.getReader();
+        /*BufferedReader reader = session.getReader();
         AuthorizationService service = session.getAuthorizationService();
         if (args.length == 1) {
             service.registerUser(session);
@@ -19,7 +19,7 @@ public class LoginCommand implements Command {
             service.authorizeUser(args[1], args[2], session);
         } else {
             System.out.println("Login command: wrong number of arguments");
-        }
+        }*/
     }
 
     public String toString() {

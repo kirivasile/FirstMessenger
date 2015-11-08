@@ -6,6 +6,7 @@ import com.github.kirivasile.technotrack.session.Session;
 import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Created by Kirill on 29.09.2015.
@@ -21,7 +22,8 @@ public class AuthorizationService {
     }
 
     public void registerUser(Session session) throws IOException {
-        BufferedReader reader = session.getReader();
+        //BufferedReader reader = session.getReader();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String name;
         System.out.println("Signing up. Please enter your name.");
         name = reader.readLine();

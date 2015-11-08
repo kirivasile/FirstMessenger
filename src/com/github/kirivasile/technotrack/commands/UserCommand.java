@@ -9,7 +9,7 @@ import com.github.kirivasile.technotrack.session.Session;
 public class UserCommand implements Command {
     @Override
     public void run(String[] args, Session session) throws Exception {
-        if (args.length < 2) {
+        /*if (args.length < 2) {
             System.out.println("User command: wrong number of arguments\n");
             return;
         }
@@ -19,7 +19,7 @@ public class UserCommand implements Command {
             System.out.println("Now the nickname of user " + session.getCurrentUserName() + " is " + newNickName);
         } else {
             System.out.println("Please login before using this command");
-        }
+        }*/
     }
 
     @Override

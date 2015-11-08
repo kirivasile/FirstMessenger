@@ -57,7 +57,7 @@ public class History {
         messages.put(date, input);
     }
 
-    public void close() {
+    public synchronized void close() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(historyFile.getAbsolutePath()))) {
             for (Map.Entry<Calendar, Message> pair : messages.entrySet()) {
                 writer.write(pair.getValue().toFileString() + "\n");
