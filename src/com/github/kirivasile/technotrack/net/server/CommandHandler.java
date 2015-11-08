@@ -25,6 +25,7 @@ public class CommandHandler {
         commands.put(new UserCommand().toString(), new UserCommand());
         commands.put(new HistoryCommand().toString(), new HistoryCommand());
         commands.put(new FindCommand().toString(), new FindCommand());
+        commands.put(new RegisterCommand().toString(), new RegisterCommand());
         this.reader = new DataInputStream(reader);
         this.writer = new DataOutputStream(writer);
     }
@@ -50,6 +51,7 @@ public class CommandHandler {
                     commandClass.run(parsedCommand, session);
                 } else if (session.getCurrentUserName() != null) {
                     history.addMessage(session.getCurrentUserName(), command);
+                    writer.writeUTF("Message delivered");
                 }
             }
             userStore.close();

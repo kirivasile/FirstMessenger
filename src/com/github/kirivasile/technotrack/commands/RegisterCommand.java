@@ -6,21 +6,21 @@ import com.github.kirivasile.technotrack.session.Session;
 import java.io.DataOutputStream;
 
 /**
- * Created by Kirill on 13.10.2015.
+ * Created by Kirill on 08.11.2015.
  */
-public class LoginCommand implements Command {
+public class RegisterCommand implements Command {
     @Override
     public void run(String[] args, Session session) throws Exception {
-        DataOutputStream writer = session.getWriter();
-        AuthorizationService service = session.getAuthorizationService();
         if (args.length == 3) {
-            service.authorizeUser(args[1], args[2], session);
+            AuthorizationService service = session.getAuthorizationService();
+            service.registerUser(args[1], args[2], session);
         } else {
-            writer.writeUTF("Login command: wrong number of arguments");
+            DataOutputStream writer = session.getWriter();
+            writer.writeUTF("Wrong number of arguments");
         }
     }
 
     public String toString() {
-        return "/login";
+        return "/register";
     }
 }

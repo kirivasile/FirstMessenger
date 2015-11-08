@@ -20,7 +20,7 @@ public class ClientMain {
             System.out.println("You can type messages. Type /exit to close connection and exit");
             String line = null;
             while(true) {
-                System.out.println("Type message");
+                System.out.print("$ ");
                 line = reader.readLine();
                 if (line.equals("/exit")) {
                     System.out.println("Closing...");
@@ -28,11 +28,12 @@ public class ClientMain {
                     out.flush();
                     break;
                 }
-                System.out.println("Sending message...");
                 out.writeUTF(line);
                 out.flush();
                 String recieved = in.readUTF();
-                System.out.println("Received: " + recieved);
+                if (!recieved.equals("Message delivered")) {
+                    System.out.println("Received: " + recieved);
+                }
             }
         } catch (Exception e) {
             System.err.println("Client: exception caught: " + e.toString());

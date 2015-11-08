@@ -21,28 +21,7 @@ public class History {
                 }
             }
             try (BufferedReader reader = new BufferedReader(new FileReader(historyFile.getAbsolutePath()))) {
-                String line;
-                while (true) {
-                    String from = reader.readLine();
-                    if (from == null) {
-                        break;
-                    }
-                    String message = reader.readLine();
-                    String date = reader.readLine();
-                    if (message == null || date == null) {
-                        System.err.println("Incorrect history data");
-                        return;
-                    }
-                    String[] parsedDate = date.split(":");
-                    int day = Integer.parseInt(parsedDate[0]);
-                    int month = Integer.parseInt(parsedDate[1]);
-                    int year = Integer.parseInt(parsedDate[2]);
-                    int hour = Integer.parseInt(parsedDate[3]);
-                    int minute = Integer.parseInt(parsedDate[4]);
-                    int second = Integer.parseInt(parsedDate[5]);
-                    Calendar calendarDate = new GregorianCalendar(year, month, day, hour, minute, second);
-                    messages.put(calendarDate, new Message(from, message, calendarDate));
-                }
+                readDataFromFile(reader);
             } catch (Exception e) {
                 System.err.println("Error in reading from file: " + e.toString());
             }
@@ -57,17 +36,50 @@ public class History {
         messages.put(date, input);
     }
 
-    public synchronized void close() {
+    public Map<Calendar, Message> getMessagesMap() {
+        return messages;
+    }
+
+    public void close() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(historyFile.getAbsolutePath()))) {
+            readDataFromFile(reader);
+        } catch (Exception e) {
+            System.err.println("Error in reading from file: " + e.toString());
+        }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(historyFile.getAbsolutePath()))) {
-            for (Map.Entry<Calendar, Message> pair : messages.entrySet()) {
-                writer.write(pair.getValue().toFileString() + "\n");
-            }
+            writeDataToFile(writer);
         } catch (Exception e) {
             System.err.println("Error in writing to file: " + e.toString());
         }
     }
 
-    public Map<Calendar, Message> getMessagesMap() {
-        return messages;
+    private synchronized void readDataFromFile(BufferedReader reader) throws Exception {
+        while (true) {
+            String from = reader.readLine();
+            if (from == null) {
+                break;
+            }
+            String message = reader.readLine();
+            String date = reader.readLine();
+            if (message == null || date == null) {
+                System.err.println("Incorrect history data");
+                return;
+            }
+            String[] parsedDate = date.split(":");
+            int day = Integer.parseInt(parsedDate[0]);
+            int month = Integer.parseInt(parsedDate[1]);
+            int year = Integer.parseInt(parsedDate[2]);
+            int hour = Integer.parseInt(parsedDate[3]);
+            int minute = Integer.parseInt(parsedDate[4]);
+            int second = Integer.parseInt(parsedDate[5]);
+            Calendar calendarDate = new GregorianCalendar(year, month, day, hour, minute, second);
+            messages.put(calendarDate, new Message(from, message, calendarDate));
+        }
+    }
+
+    private synchronized void writeDataToFile(BufferedWriter writer) throws Exception {
+        for (Map.Entry<Calendar, Message> pair : messages.entrySet()) {
+            writer.write(pair.getValue().toFileString() + "\n");
+        }
     }
 }

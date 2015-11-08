@@ -20,23 +20,36 @@ public class UserStore implements AutoCloseable {
                 userList.createNewFile();
             }
             try (BufferedReader reader = new BufferedReader(new FileReader(userList.getAbsolutePath()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    String[] parsedLine = line.split(", ");
-                    if (parsedLine.length != 3) {
-                        System.err.println("Incorrect information read");
-                        return;
-                    }
-                    String name = parsedLine[0];
-                    String passwordHash = parsedLine[1];
-                    String nick = parsedLine[2];
-                    users.put(name, new User(name, passwordHash, nick));
-                }
+                readDataFromFile(reader);
             } catch (Exception e) {
                 System.err.println("Error in reading from file: " + e.toString());
             }
         } catch (IOException e) {
             System.err.println("IOException in creating file");
+        }
+    }
+
+    private void readDataFromFile(BufferedReader reader) throws Exception {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parsedLine = line.split(", ");
+            if (parsedLine.length != 3) {
+                System.err.println("Incorrect information read");
+                return;
+            }
+            String name = parsedLine[0];
+            String passwordHash = parsedLine[1];
+            String nick = parsedLine[2];
+            users.put(name, new User(name, passwordHash, nick));
+        }
+    }
+
+    private void writeDataToFile(BufferedWriter writer) throws Exception {
+        for (Map.Entry<String, User> pair : users.entrySet()) {
+            String name = pair.getKey();
+            String hashPassword = pair.getValue().getPassword();
+            String nickname = pair.getValue().getNick();
+            writer.write(name + ", " + hashPassword + ", " + nickname + "\n");
         }
     }
 
@@ -62,14 +75,14 @@ public class UserStore implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public synchronized void close() throws Exception {
+        try (BufferedReader reader = new BufferedReader(new FileReader(userList.getAbsolutePath()))) {
+            readDataFromFile(reader);
+        } catch (Exception e) {
+            System.err.println("Error in reading from file when closing: " + e.toString());
+        }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(userList.getAbsolutePath()))) {
-            for (Map.Entry<String, User> pair : users.entrySet()) {
-                String name = pair.getKey();
-                String hashPassword = pair.getValue().getPassword();
-                String nickname = pair.getValue().getNick();
-                writer.write(name + ", " + hashPassword + ", " + nickname + "\n");
-            }
+            writeDataToFile(writer);
         } catch (Exception e) {
             System.err.println("Error in writing to file: " + e.toString());
         }

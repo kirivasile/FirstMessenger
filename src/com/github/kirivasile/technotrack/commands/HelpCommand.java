@@ -12,7 +12,7 @@ public class HelpCommand implements Command {
     public void run(String[] args, Session session) throws Exception {
         DataOutputStream writer = session.getWriter();
         writer.writeUTF("List of commands:\n" +
-                "  /login - sign up a user\n" +
+                "  /register <login> <password> - sign up a user\n" +
                 "  /login <login> <password> - sign in with these parameters\n" +
                 "  /user <nick> - change your nickname to \'nick\'\n" +
                 "  /history <n> - show last n messages. Without parameter \'n\' show the full history\n" +
