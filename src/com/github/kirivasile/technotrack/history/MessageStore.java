@@ -9,4 +9,5 @@ import java.util.Map;
 public interface MessageStore {
     void addMessage(String from, String message);
     Map<Calendar, Message> getMessagesMap();
+    void close() throws Exception;
 }

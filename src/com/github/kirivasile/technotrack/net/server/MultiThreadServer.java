@@ -37,17 +37,16 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
             while (!isStopped()) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client connected.");
-                Runnable serverWork = () -> {
+                Thread thread = new Thread(() -> {
                     try {
                         DataInputStream in = new DataInputStream(clientSocket.getInputStream());
                         DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
                         CommandHandler commandHandler = new CommandHandler(in, out, dataStore);
-                        commandHandler.run();
+                        commandHandler.handle();
                     } catch (IOException e) {
                         System.err.println("ServerWork: Error in client thread of server " + e.toString());
                     }
-                };
-                Thread thread = new Thread(serverWork);
+                });
                 clientThreads.add(thread);
                 thread.start();
             }

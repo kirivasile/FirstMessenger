@@ -2,6 +2,7 @@ package com.github.kirivasile.technotrack.session;
 
 import com.github.kirivasile.technotrack.authorization.AuthorizationService;
 import com.github.kirivasile.technotrack.history.FileMessageStore;
+import com.github.kirivasile.technotrack.history.MessageStore;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,13 +15,14 @@ public class Session {
     private DataOutputStream writer;
     private AuthorizationService authorizationService;
     private String currentUserName;
-    private FileMessageStore fileMessageStore;
+    private MessageStore fileMessageStore;
 
-    public Session(DataInputStream r, DataOutputStream w, AuthorizationService as, FileMessageStore h) {
-        this.reader = r;
-        this.writer = w;
-        this.authorizationService = as;
-        this.fileMessageStore = h;
+    public Session(DataInputStream reader, DataOutputStream writer,
+                   AuthorizationService authService, MessageStore messageStore) {
+        this.reader = reader;
+        this.writer = writer;
+        this.authorizationService = authService;
+        this.fileMessageStore = messageStore;
     }
 
     public DataInputStream getReader() {
@@ -43,7 +45,7 @@ public class Session {
         this.currentUserName = currentUserName;
     }
 
-    public FileMessageStore getFileMessageStore() {
+    public MessageStore getFileMessageStore() {
         return fileMessageStore;
     }
 }

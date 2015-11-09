@@ -6,4 +6,5 @@ package com.github.kirivasile.technotrack.authorization;
 public interface UserStore {
     User getUser(String name);
     void addUser(User user);
+    void close() throws Exception;
 }

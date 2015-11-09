@@ -6,7 +6,7 @@ import java.util.*;
 /**
  * Created by Kirill on 18.10.2015.
  */
-public class FileMessageStore implements AutoCloseable {
+public class FileMessageStore implements AutoCloseable, MessageStore {
     private Map<Calendar, Message> messages;
     private File historyFile;
 
