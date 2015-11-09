@@ -19,14 +19,14 @@ public class DataStore {
         this.userStore = fileUserStore;
         this.messageStore = messageStore;
         commandsStore = new HashMap<>();
-        commandsStore.put(new HelpCommand().toString(), new HelpCommand());
-        commandsStore.put(new LoginCommand().toString(), new LoginCommand());
-        commandsStore.put(new UserCommand().toString(), new UserCommand());
-        commandsStore.put(new HistoryCommand().toString(), new HistoryCommand());
-        commandsStore.put(new FindCommand().toString(), new FindCommand());
-        commandsStore.put(new RegisterCommand().toString(), new RegisterCommand());
-        commandsStore.put(new UserInfoCommand().toString(), new UserInfoCommand());
-        commandsStore.put(new ChangePasswordCommand().toString(), new ChangePasswordCommand());
+        commandsStore.put("/help", new HelpCommand());
+        commandsStore.put("/login", new LoginCommand());
+        commandsStore.put("/user", new UserCommand());
+        commandsStore.put("/history", new HistoryCommand());
+        commandsStore.put("/find", new FindCommand());
+        commandsStore.put("/register", new RegisterCommand());
+        commandsStore.put("/user_info", new UserInfoCommand());
+        commandsStore.put("/user_pass", new ChangePasswordCommand());
     }
 
     public UserStore getUserStore() {
