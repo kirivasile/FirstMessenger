@@ -54,10 +54,10 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
             //Server was closed
             if (!e.getMessage().equals("socket closed")) {
                 System.err.println("Server: exception caught: " + e.toString());
-                close();
             }
         } catch (Exception e) {
             System.err.println("Server: exception caught: " + e.toString());
+        } finally {
             close();
         }
     }
