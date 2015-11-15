@@ -11,6 +11,8 @@ import java.net.Socket;
  */
 public class ClientMain {
     public static void main(String[] args) {
+
+        // TODO: в константы
         int port = 9000;
         try {
             Socket socket = new Socket("localhost", port);
@@ -30,6 +32,8 @@ public class ClientMain {
                 }
                 out.writeUTF(line);
                 out.flush();
+
+                // TODO: а у нас не асинхронный клиент?
                 String recieved = in.readUTF();
                 if (!recieved.equals("Message delivered")) {
                     System.out.println("Received: " + recieved);

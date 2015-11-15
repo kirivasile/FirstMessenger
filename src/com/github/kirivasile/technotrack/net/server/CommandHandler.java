@@ -29,6 +29,7 @@ public class CommandHandler {
             AuthorizationService service = new AuthorizationService(dataStore.getUserStore());
             MessageStore fileMessageStore = dataStore.getMessageStore();
             Session session = new Session(reader, writer, service, fileMessageStore);
+
             while (true) {
                 String command = reader.readUTF();
                 if (command.equals("/exit")) {
@@ -43,12 +44,15 @@ public class CommandHandler {
                     }
                     commandClass.run(parsedCommand, session);
                 } else if (session.getCurrentUserName() != null) {
+                    // FIXME: сообщение не рассылается никому
                     fileMessageStore.addMessage(session.getCurrentUserName(), command);
                     writer.writeUTF("Message delivered");
                 } else {
                     writer.writeUTF("Please login or sign up first");
                 }
             }
+
+            // FIXME: вроде если закроете в одном потоке, дата стор будет закрыт для всех. Нехорошо
             dataStore.close();
         } catch (Exception e) {
             System.err.println("Exception in reading command " + e.toString());

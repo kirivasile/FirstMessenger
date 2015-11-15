@@ -41,6 +41,8 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
                     try {
                         DataInputStream in = new DataInputStream(clientSocket.getInputStream());
                         DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+                        // TODO: лучше CommandHandler сделать Runnable в вашем случае
+                        // и передавать его в new Thread() - будет читаемее
                         CommandHandler commandHandler = new CommandHandler(in, out, dataStore);
                         commandHandler.handle();
                     } catch (IOException e) {
@@ -76,6 +78,7 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
         try {
             serverSocket.close();
             for (Thread it : clientThreads) {
+                // FIXME: потоки никогда не остановятся, потому что для них нет никакого механизма останова
                 it.join();
             }
         } catch (Exception e) {
