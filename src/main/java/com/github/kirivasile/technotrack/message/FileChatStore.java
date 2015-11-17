@@ -7,11 +7,11 @@ import java.util.*;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
-public class MapChatStore implements ChatStore {
+public class FileChatStore implements ChatStore {
     private Map<Integer, Chat> chats;
     private Map<Integer, Chat> privateChats;
 
-    public MapChatStore() {
+    public FileChatStore() {
         chats = new TreeMap<>();
         privateChats = new HashMap<>();
     }

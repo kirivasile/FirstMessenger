@@ -1,7 +1,7 @@
 package com.github.kirivasile.technotrack.net.server;
 
 import com.github.kirivasile.technotrack.authorization.FileUserStore;
-import com.github.kirivasile.technotrack.message.MapChatStore;
+import com.github.kirivasile.technotrack.message.FileChatStore;
 import com.github.kirivasile.technotrack.message.FileMessageStore;
 import com.github.kirivasile.technotrack.session.SessionManager;
 
@@ -29,7 +29,7 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
         this.serverPort = serverPort;
         isStopped = false;
         clientThreads = new ArrayList<>();
-        dataStore = new DataStore(new FileUserStore(), new FileMessageStore(), new MapChatStore());
+        dataStore = new DataStore(new FileUserStore(), new FileMessageStore(), new FileChatStore());
         sessionManager = new SessionManager();
     }
 
