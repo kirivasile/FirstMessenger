@@ -27,16 +27,17 @@ public class AuthorizationService {
         String message = "";
         AnswerMessage.Value success;
         if (name != null && password != null) {
-            User currentUser = userStore.getUser(name);
+            User currentUser = userStore.getUserByName(name);
             if (currentUser != null) {
                 //writer.writeUTF("Sorry, but user with this name has already registered");
                 message = "Sorry, but user with this name has already registered";
                 success = AnswerMessage.Value.ERROR;
             } else {
-                userStore.addUser(new User(name, password, name));
+                int id = userStore.addUser(new User(name, password, name));
                 session.setCurrentUserName(name);
+                session.setCurrentUserId(id);
                 message = String.format("User was successfully signed up" +
-                                                "Login: %s, Password: %s", name, password);
+                                                "Login: %s, Password: %s, Id: %d", name, password, id);
                 //writer.writeUTF(message);
                 success = AnswerMessage.Value.SUCCESS;
             }
@@ -53,12 +54,13 @@ public class AuthorizationService {
         Protocol<AnswerMessage> protocol = new SerializationProtocol<>();
         String message = "";
         AnswerMessage.Value success;
-        User user = userStore.getUser(name);
+        User user = userStore.getUserByName(name);
         if (user != null) {
             if (user.getPassword().equals(Integer.toString(password.hashCode()))) {
                 session.setCurrentUserName(name);
+                session.setCurrentUserId(user.getId());
                 //writer.writeUTF("Hello, " + name + "!");
-                message = "Hello, " + name + "!";
+                message = String.format("Hello, %s! Your id = %d", name, user.getId());
                 success = AnswerMessage.Value.SUCCESS;
             } else {
                 //writer.writeUTF("Password is incorrect");
@@ -74,7 +76,7 @@ public class AuthorizationService {
     }
 
     public boolean changeUserNick(String name, String newNickName) {
-        User user = userStore.getUser(name);
+        User user = userStore.getUserByName(name);
         if (user == null) {
             return false;
         }
@@ -83,7 +85,7 @@ public class AuthorizationService {
     }
 
     public int changePassword(String name, String oldPassword, String newPassword) {
-        User user = userStore.getUser(name);
+        User user = userStore.getUserByName(name);
         if (user == null) {
             return -1;
         }
@@ -98,6 +100,6 @@ public class AuthorizationService {
     }
 
     public User getUserInfo(String name) {
-        return userStore.getUser(name);
+        return userStore.getUserByName(name);
     }
 }

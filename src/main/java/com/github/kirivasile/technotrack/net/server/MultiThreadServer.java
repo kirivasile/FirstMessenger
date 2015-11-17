@@ -1,6 +1,7 @@
 package com.github.kirivasile.technotrack.net.server;
 
 import com.github.kirivasile.technotrack.authorization.FileUserStore;
+import com.github.kirivasile.technotrack.message.FileChatStore;
 import com.github.kirivasile.technotrack.message.FileMessageStore;
 
 import java.io.DataInputStream;
@@ -26,10 +27,13 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
         this.serverPort = serverPort;
         isStopped = false;
         clientThreads = new ArrayList<>();
-        dataStore = new DataStore(new FileUserStore(), new FileMessageStore());
+        dataStore = new DataStore(new FileUserStore(), new FileMessageStore(), new FileChatStore());
     }
 
 
+    /**
+     *
+     */
     @Override
     public void run() {
         try {
@@ -77,6 +81,7 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
         stop();
         try {
             serverSocket.close();
+            dataStore.close();
             for (Thread it : clientThreads) {
                 // FIXME: потоки никогда не остановятся, потому что для них нет никакого механизма останова
                 it.join();

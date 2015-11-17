@@ -33,7 +33,7 @@ public class UserInfoCommand implements Command {
                     success = AnswerMessage.Value.ERROR;
                 } else {
                     message = String.format("Username: %s," +
-                                                " nickname: %s", user.getName(), user.getNick());
+                                                " nickname: %s, Id: %d", user.getName(), user.getNick(), user.getId());
                     success = AnswerMessage.Value.SUCCESS;
                     //writer.writeUTF(data);
                 }
@@ -47,7 +47,7 @@ public class UserInfoCommand implements Command {
                 success = AnswerMessage.Value.ERROR;
             } else {
                 message = String.format("Username: %s," +
-                        " nickname: %s", user.getName(), user.getNick());
+                        " nickname: %s, Id: %d", user.getName(), user.getNick(), user.getId());
                 //writer.writeUTF(data);
                 success = AnswerMessage.Value.SUCCESS;
             }

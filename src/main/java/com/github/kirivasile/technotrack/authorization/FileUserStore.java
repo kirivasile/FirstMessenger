@@ -1,7 +1,9 @@
 package com.github.kirivasile.technotrack.authorization;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -9,7 +11,7 @@ import java.util.Map;
  */
 public class FileUserStore implements AutoCloseable, UserStore {
     /*To reduce the number of writings, I've created a local cache of users, which would be used for reading*/
-    private Map<String, User> users;
+    private Map<Integer, User> users;
     private File userList;
 
     public FileUserStore() {
@@ -33,46 +35,69 @@ public class FileUserStore implements AutoCloseable, UserStore {
         String line;
         while ((line = reader.readLine()) != null) {
             String[] parsedLine = line.split(", ");
-            if (parsedLine.length != 3) {
+            if (parsedLine.length != 4) {
                 System.err.println("Incorrect information read");
                 return;
             }
-            String name = parsedLine[0];
-            String passwordHash = parsedLine[1];
-            String nick = parsedLine[2];
-            int id = users.size();
+            Integer id = Integer.parseInt(parsedLine[0]);
+            String name = parsedLine[1];
+            String passwordHash = parsedLine[2];
+            String nick = parsedLine[3];
             User input = new User(name, passwordHash, nick);
             input.setId(id);
-            users.put(name, input);
+            users.put(id, input);
         }
     }
 
     private synchronized void writeDataToFile(BufferedWriter writer) throws Exception {
-        for (Map.Entry<String, User> pair : users.entrySet()) {
-            String name = pair.getKey();
+        for (Map.Entry<Integer, User> pair : users.entrySet()) {
+            Integer id = pair.getKey();
+            String name = pair.getValue().getName();
             String hashPassword = pair.getValue().getPassword();
             String nickname = pair.getValue().getNick();
-            writer.write(name + ", " + hashPassword + ", " + nickname + "\n");
+            writer.write(id + ", " + name + ", " + hashPassword + ", " + nickname + "\n");
         }
     }
 
-    public synchronized User getUser(String name) {
+    public synchronized User getUserByName(String name) {
         if (name == null) {
             return null;
         }
-        return users.get(name);
+        for (Map.Entry<Integer, User> pair : users.entrySet()) {
+            if (pair.getValue().getName().equals(name)) {
+                return pair.getValue();
+            }
+        }
+        return null;
     }
 
-    public synchronized void addUser(User user) {
+    public synchronized User getUser(int id) {
+        if (id < 0) {
+            return null;
+        }
+        return users.get(id);
+    }
+
+    public synchronized int addUser(User user) {
         if (user == null) {
             System.out.println("Can't add user");
-            return;
+            return -1;
         }
         int hash = user.getPassword().hashCode();
         int id = users.size();
         User input = new User(user.getName(), Integer.toString(hash), user.getName());
         input.setId(id);
-        users.put(user.getName(), input);
+        users.put(id, input);
+        return id;
+    }
+
+    @Override
+    public List<User> getUserList() {
+        List<User> result = new ArrayList<>();
+        for (Map.Entry<Integer, User> user : users.entrySet()) {
+            result.add(user.getValue());
+        }
+        return result;
     }
 
     @Override
@@ -83,5 +108,4 @@ public class FileUserStore implements AutoCloseable, UserStore {
             System.err.println("Error in writing to file: " + e.toString());
         }
     }
-
 }

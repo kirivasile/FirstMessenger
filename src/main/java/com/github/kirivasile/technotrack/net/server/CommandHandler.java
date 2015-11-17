@@ -27,7 +27,7 @@ public class CommandHandler {
             Map<String, Command> commands = dataStore.getCommandsStore();
             AuthorizationService service = new AuthorizationService(dataStore.getUserStore());
             MessageStore fileMessageStore = dataStore.getMessageStore();
-            Session session = new Session(reader, writer, service, fileMessageStore);
+            Session session = new Session(reader, writer, service, dataStore);
             Protocol<AnswerMessage> answerProtocol = new SerializationProtocol<AnswerMessage>();
             Protocol<Message> readProtocol = new SerializationProtocol<>();
             while (true) {
@@ -54,7 +54,7 @@ public class CommandHandler {
                     fileMessageStore.addMessage(session.getCurrentUserName(), received.getMessage());
                     //writer.writeUTF("Message delivered");
                     String str = "Message delivered";
-                    AnswerMessage answer = new AnswerMessage(str, AnswerMessage.Value.ERROR);
+                    AnswerMessage answer = new AnswerMessage(str, AnswerMessage.Value.SUCCESS);
                     writer.write(answerProtocol.encode(answer));
                 } else {
                     //writer.writeUTF("Please login or sign up first");
@@ -66,7 +66,7 @@ public class CommandHandler {
             }
 
             // FIXME: вроде если закроете в одном потоке, дата стор будет закрыт для всех. Нехорошо
-            dataStore.close();
+            //dataStore.close();
         } catch (Exception e) {
             System.err.println("Exception in reading command " + e.toString());
         }

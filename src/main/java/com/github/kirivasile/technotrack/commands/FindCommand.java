@@ -28,7 +28,7 @@ public class FindCommand implements Command {
                 success = AnswerMessage.Value.LOGIN;
             } else {
                 StringBuilder messageBuilder = new StringBuilder();
-                Map<Integer, ChatMessage> messageMap = session.getFileMessageStore().getMessagesMap();
+                Map<Integer, ChatMessage> messageMap = session.getDataStore().getMessageStore().getMessagesMap();
                 for (Map.Entry<Integer, ChatMessage> pair : messageMap.entrySet()) {
                     if (pair.getValue().checkAuthor(session.getCurrentUserName())) {
                         String msg = pair.getValue().getMessage();

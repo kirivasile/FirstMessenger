@@ -12,9 +12,12 @@ public class AnswerMessage implements Serializable {
         SUCCESS,
         ERROR,
         LOGIN,
-        NUM_ARGS
+        NUM_ARGS,
+        CHAT,
     }
 
+    private int id;
+    private String from;
     private String message;
     private Value result;
 
@@ -37,5 +40,21 @@ public class AnswerMessage implements Serializable {
 
     public void setResult(Value result) {
         this.result = result;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
     }
 }

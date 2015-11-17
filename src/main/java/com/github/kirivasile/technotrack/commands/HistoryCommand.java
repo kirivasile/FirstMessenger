@@ -29,7 +29,8 @@ public class HistoryCommand implements Command {
         }
         if (args.length == 1) {
             StringBuilder stringBuilder = new StringBuilder();
-            for (Map.Entry<Integer, ChatMessage> pair : session.getFileMessageStore().getMessagesMap().entrySet()) {
+            Map<Integer, ChatMessage> messageMap = session.getDataStore().getMessageStore().getMessagesMap();
+            for (Map.Entry<Integer, ChatMessage> pair : messageMap.entrySet()) {
                 if (pair.getValue().checkAuthor(session.getCurrentUserName())) {
                     stringBuilder.append(pair.getValue());
                 }
@@ -39,7 +40,8 @@ public class HistoryCommand implements Command {
             success = AnswerMessage.Value.SUCCESS;
         } else if (args.length == 2) {
             List<ChatMessage> listOfChatMessages = new ArrayList<>();
-            for (Map.Entry<Integer, ChatMessage> pair : session.getFileMessageStore().getMessagesMap().entrySet()) {
+            Map<Integer, ChatMessage> messageMap = session.getDataStore().getMessageStore().getMessagesMap();
+            for (Map.Entry<Integer, ChatMessage> pair : messageMap.entrySet()) {
                 if (pair.getValue().checkAuthor(session.getCurrentUserName())) {
                     listOfChatMessages.add(pair.getValue());
                 }
