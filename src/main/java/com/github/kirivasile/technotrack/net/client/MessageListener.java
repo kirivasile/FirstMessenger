@@ -60,7 +60,7 @@ public class MessageListener implements Runnable {
             case CHAT:
                 String from = answer.getFrom();
                 int id = answer.getId();
-                System.out.println(String.format("%s(%d): %s", from, id, message));
+                System.out.println(String.format("%s(id:%d): %s", from, id, message));
                 break;
         }
     }

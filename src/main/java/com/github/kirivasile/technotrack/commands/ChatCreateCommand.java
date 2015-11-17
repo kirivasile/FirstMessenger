@@ -24,7 +24,8 @@ public class ChatCreateCommand implements Command {
         String message = "";
         AnswerMessage.Value success;
         DataStore dataStore = session.getDataStore();
-        if (session.getCurrentUserId() == -1) {
+        int authorId = session.getCurrentUserId();
+        if (authorId == -1) {
             success = AnswerMessage.Value.LOGIN;
         } else {
             if (args.length != 2) {
@@ -33,6 +34,7 @@ public class ChatCreateCommand implements Command {
                 UserStore userStore = dataStore.getUserStore();
                 List<Integer> participants = new ArrayList<>();
                 String[] parsedArg = args[1].split(",");
+                participants.add(authorId);
                 for (String it : parsedArg) {
                     int id = Integer.parseInt(it);
                     participants.add(id);
@@ -47,14 +49,14 @@ public class ChatCreateCommand implements Command {
                     int id1 = session.getCurrentUserId();
                     int id2 = participants.get(0);
                     int result = dataStore.getChatStore().createPrivateChat(id1, id2);
-                    if (result != -1) {
-                        message = "Chat was successfully created";
+                    if (result >= 0) {
+                        message = "Chat was successfully created, id: " + result;
                     } else {
-                        message = "Chat is existing";
+                        message = "Chat is existing, id: " + (-result + 1);
                     }
                 } else {
-                    dataStore.getChatStore().createChat(participants);
-                    message = "Chat was successfully created";
+                    int result = dataStore.getChatStore().createChat(participants);
+                    message = "Chat was successfully created, id: " + result;
                 }
                 success = AnswerMessage.Value.SUCCESS;
             }

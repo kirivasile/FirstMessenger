@@ -1,8 +1,9 @@
 package com.github.kirivasile.technotrack.net.server;
 
 import com.github.kirivasile.technotrack.authorization.FileUserStore;
-import com.github.kirivasile.technotrack.message.FileChatStore;
+import com.github.kirivasile.technotrack.message.MapChatStore;
 import com.github.kirivasile.technotrack.message.FileMessageStore;
+import com.github.kirivasile.technotrack.session.SessionManager;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -22,12 +23,14 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
     private boolean isStopped;
     private List<Thread> clientThreads;
     private DataStore dataStore;
+    private SessionManager sessionManager;
 
     public MultiThreadServer(int serverPort) {
         this.serverPort = serverPort;
         isStopped = false;
         clientThreads = new ArrayList<>();
-        dataStore = new DataStore(new FileUserStore(), new FileMessageStore(), new FileChatStore());
+        dataStore = new DataStore(new FileUserStore(), new FileMessageStore(), new MapChatStore());
+        sessionManager = new SessionManager();
     }
 
 
@@ -47,7 +50,7 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
                         DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
                         // TODO: лучше CommandHandler сделать Runnable в вашем случае
                         // и передавать его в new Thread() - будет читаемее
-                        CommandHandler commandHandler = new CommandHandler(in, out, dataStore);
+                        CommandHandler commandHandler = new CommandHandler(in, out, dataStore, sessionManager);
                         commandHandler.handle();
                     } catch (IOException e) {
                         System.err.println("ServerWork: Error in client thread of server " + e.toString());

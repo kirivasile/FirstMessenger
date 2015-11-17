@@ -18,13 +18,15 @@ public class Session {
     private String currentUserName;
     private DataStore dataStore;
     private int currentUserId;
+    private SessionManager sessionManager;
 
     public Session(DataInputStream reader, DataOutputStream writer,
-                   AuthorizationService authService, DataStore dataStore) {
+                   AuthorizationService authService, DataStore dataStore, SessionManager manager) {
         this.reader = reader;
         this.writer = writer;
         this.authorizationService = authService;
         this.dataStore = dataStore;
+        this.sessionManager = manager;
         this.currentUserId = -1;
     }
 
@@ -50,6 +52,10 @@ public class Session {
 
     public DataStore getDataStore() {
         return dataStore;
+    }
+
+    public SessionManager getSessionManager() {
+        return sessionManager;
     }
 
     public int getCurrentUserId() {

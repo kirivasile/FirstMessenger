@@ -33,6 +33,7 @@ public class DataStore {
         commandsStore.put("/chat_create", new ChatCreateCommand());
         commandsStore.put("/chat_list", new ChatListCommand());
         commandsStore.put("/user_list", new UserListCommand());
+        commandsStore.put("/chat_send", new ChatSendCommand());
     }
 
     public UserStore getUserStore() {

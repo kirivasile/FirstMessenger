@@ -7,11 +7,11 @@ import java.util.*;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
-public class FileChatStore implements ChatStore {
+public class MapChatStore implements ChatStore {
     private Map<Integer, Chat> chats;
     private Map<Integer, Chat> privateChats;
 
-    public FileChatStore() {
+    public MapChatStore() {
         chats = new TreeMap<>();
         privateChats = new HashMap<>();
     }
@@ -28,7 +28,7 @@ public class FileChatStore implements ChatStore {
     public synchronized int createPrivateChat(int id1, int id2) throws Exception {
         int chatId = getPrivateChat(id1, id2);
         if (chatId != -1) {
-            return -1;
+            return -chatId - 1;
         }
         chatId = privateChats.size() + chats.size();
         List<Integer> participants = new ArrayList<>();
@@ -61,6 +61,15 @@ public class FileChatStore implements ChatStore {
 
     @Override
     public Chat getChat(Integer id) throws Exception {
-        return chats.get(id);
+        //return chats.get(id);
+        Chat result = chats.get(id);
+        if (result == null) {
+            return privateChats.get(id);
+        }
+        return result;
+    }
+
+    public boolean isAPrivateChat(Integer id) throws Exception {
+        return privateChats.containsKey(id);
     }
 }

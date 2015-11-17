@@ -4,6 +4,7 @@ import com.github.kirivasile.technotrack.authorization.AuthorizationService;
 import com.github.kirivasile.technotrack.commands.*;
 import com.github.kirivasile.technotrack.message.*;
 import com.github.kirivasile.technotrack.session.Session;
+import com.github.kirivasile.technotrack.session.SessionManager;
 
 import java.io.*;
 import java.util.Map;
@@ -15,8 +16,10 @@ public class CommandHandler {
     private DataInputStream reader;
     private DataOutputStream writer;
     private DataStore dataStore;
+    private SessionManager sessionManager;
 
-    public CommandHandler(InputStream reader, OutputStream writer, DataStore dataStore) {
+    public CommandHandler(InputStream reader, OutputStream writer, DataStore dataStore, SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
         this.reader = new DataInputStream(reader);
         this.writer = new DataOutputStream(writer);
         this.dataStore = dataStore;
@@ -27,7 +30,8 @@ public class CommandHandler {
             Map<String, Command> commands = dataStore.getCommandsStore();
             AuthorizationService service = new AuthorizationService(dataStore.getUserStore());
             MessageStore fileMessageStore = dataStore.getMessageStore();
-            Session session = new Session(reader, writer, service, dataStore);
+            Session session = new Session(reader, writer, service, dataStore, sessionManager);
+            sessionManager.addSession(session);
             Protocol<AnswerMessage> answerProtocol = new SerializationProtocol<AnswerMessage>();
             Protocol<Message> readProtocol = new SerializationProtocol<>();
             while (true) {
