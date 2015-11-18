@@ -17,7 +17,6 @@ import java.util.Map;
 public class FileUserStore implements AutoCloseable, UserStore {
     /*To reduce the number of writings, I've created a local cache of users, which would be used for reading*/
     private Map<Integer, User> users;
-    private File userList;
     private Connection connection;
 
     public FileUserStore(Connection conn) {
@@ -41,49 +40,7 @@ public class FileUserStore implements AutoCloseable, UserStore {
         } catch (Exception e) {
             System.err.println("UserStore: failed to open database " + e.getMessage());
         }
-        /*users = new HashMap<>();
-        userList = new File("users.db");
-        try {
-            if (!userList.exists()) {
-                userList.createNewFile();
-            }
-            try (BufferedReader reader = new BufferedReader(new FileReader(userList.getAbsolutePath()))) {
-                readDataFromFile(reader);
-            } catch (Exception e) {
-                System.err.println("FileUserStore: Error in reading from file: " + e.toString());
-            }
-        } catch (IOException e) {
-            System.err.println("FileUserStore: IOException in creating file");
-        }*/
     }
-
-    /*private synchronized void readDataFromFile(BufferedReader reader) throws Exception {
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] parsedLine = line.split(", ");
-            if (parsedLine.length != 4) {
-                System.err.println("FileUserStore: Incorrect information read");
-                return;
-            }
-            Integer id = Integer.parseInt(parsedLine[0]);
-            String name = parsedLine[1];
-            String passwordHash = parsedLine[2];
-            String nick = parsedLine[3];
-            User input = new User(name, passwordHash, nick);
-            input.setId(id);
-            users.put(id, input);
-        }
-    }*/
-
-    /*private synchronized void writeDataToFile(BufferedWriter writer) throws Exception {
-        for (Map.Entry<Integer, User> pair : users.entrySet()) {
-            Integer id = pair.getKey();
-            String name = pair.getValue().getName();
-            String hashPassword = pair.getValue().getPassword();
-            String nickname = pair.getValue().getNick();
-            writer.write(id + ", " + name + ", " + hashPassword + ", " + nickname + "\n");
-        }
-    }*/
 
     public synchronized User getUserByName(String name) {
         if (name == null) {
@@ -114,7 +71,7 @@ public class FileUserStore implements AutoCloseable, UserStore {
             Statement stmt = connection.createStatement();
             stmt.executeUpdate(String.format("INSERT INTO USERS (LOGIN, PASSWORD, NICK) " +
                             "VALUES (\'%s\', \'%s\', \'%s\' )", user.getName(),
-                    user.getPassword(), user.getName()), Statement.RETURN_GENERATED_KEYS);
+                    Integer.toString(user.getPassword().hashCode()), user.getName()), Statement.RETURN_GENERATED_KEYS);
             ResultSet rs = stmt.getGeneratedKeys();
             while (rs.next()) {
                 result = rs.getInt(1);
@@ -140,10 +97,5 @@ public class FileUserStore implements AutoCloseable, UserStore {
 
     @Override
     public synchronized void close() throws Exception {
-        /*try (BufferedWriter writer = new BufferedWriter(new FileWriter(userList.getAbsolutePath()))) {
-            writeDataToFile(writer);
-        } catch (Exception e) {
-            System.err.println("FileUserStore: Error in writing to file: " + e.toString());
-        }*/
     }
 }

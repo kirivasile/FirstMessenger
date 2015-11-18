@@ -34,7 +34,7 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
             clientThreads = new ArrayList<>();
             connection = DriverManager.getConnection("jdbc:postgresql://178.62.140.149:5432/kirivasile",
                     "senthil", "ubuntu");
-            dataStore = new DataStore(new FileUserStore(connection), new FileChatStore(), connection);
+            dataStore = new DataStore(new FileUserStore(connection), new FileChatStore(connection), connection);
             sessionManager = new SessionManager();
         } catch (Exception e) {
             System.err.println("Server: exception caught " + e.toString());

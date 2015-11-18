@@ -45,7 +45,7 @@ public class ChatCreateCommand implements Command {
                         return;
                     }
                 }
-                if (participants.size() == 1) {
+                /*if (participants.size() == 1) {
                     int id1 = session.getCurrentUserId();
                     int id2 = participants.get(0);
                     int result = dataStore.getChatStore().createPrivateChat(id1, id2);
@@ -53,11 +53,9 @@ public class ChatCreateCommand implements Command {
                         message = "Chat was successfully created, id: " + result;
                     } else {
                         message = "Chat is existing, id: " + (-result + 1);
-                    }
-                } else {
-                    int result = dataStore.getChatStore().createChat(participants);
-                    message = "Chat was successfully created, id: " + result;
-                }
+                    }*/
+                int result = dataStore.getChatStore().createChat(participants);
+                message = "Chat was successfully created, id: " + result;
                 success = AnswerMessage.Value.SUCCESS;
             }
         }

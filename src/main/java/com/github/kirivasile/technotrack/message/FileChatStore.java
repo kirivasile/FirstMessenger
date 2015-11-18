@@ -1,8 +1,10 @@
 package com.github.kirivasile.technotrack.message;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import com.github.kirivasile.technotrack.jdbc.QueryExecutor;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.*;
 
 /**
@@ -12,114 +14,66 @@ import java.util.*;
  */
 public class FileChatStore implements ChatStore {
     private Map<Integer, Chat> chats;
-    private Map<Integer, Chat> privateChats;
+    private Connection connection;
 
-    public FileChatStore() {
+    public FileChatStore(Connection conn) {
         chats = new TreeMap<>();
-        privateChats = new HashMap<>();
-        //readDataFromFile();
-    }
-
-    public void readDataFromFile() {
-        File directory = new File("messages");
-        if (!directory.exists() || !directory.isDirectory()) {
-            System.err.println("FileChatStore: failed to open directory");
-        }
-        File[] files = directory.listFiles();
-        for (File file : files) {
-            if (file.getName().startsWith("data")) {
-                try (BufferedReader reader = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
-                    String line = reader.readLine();
-                    String[] args = line.split("\\s+");
-                    int chatId = Integer.parseInt(args[0]);
-                    List<Integer> participants = new ArrayList<>();
-                    int size = Integer.parseInt(args[1]);
-                    for (int i = 0; i < size; ++i) {
-                        participants.add(Integer.parseInt(args[i + 2]));
-                    }
-                    if (participants.size() == 2) {
-                        createPrivateChatWithId(chatId, participants.get(0), participants.get(1));
+        this.connection = conn;
+        try {
+            QueryExecutor executor = new QueryExecutor();
+            executor.execQuery(connection, "SELECT user_id, chat_id FROM userschat", (r) -> {
+                while (r.next()) {
+                    int chatId = r.getInt("chat_id");
+                    int userId = r.getInt("user_id");
+                    Chat chat = chats.get(chatId);
+                    if (chat == null) {
+                        chat = new Chat(chatId);
+                        chat.addParticipant(userId);
+                        chats.put(chatId, chat);
                     } else {
-                        createChatWithId(chatId, participants);
+                        chat.addParticipant(userId);
                     }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    System.err.println("FileMessageStore: Incorrect chat data");
-                } catch (Exception e) {
-                    System.err.println("FileMessageStore: Error in reading from file: " + e.toString());
                 }
-            }
+                return null;
+            });
+        } catch (Exception e) {
+            System.err.println("ChatStore: failed to read data " + e.getMessage());
         }
-    }
-
-    private void createPrivateChatWithId(int chatId, int userId1, int userId2) {
-        List<Integer> participants = new ArrayList<>();
-        participants.add(userId1);
-        participants.add(userId2);
-        Chat chat = new Chat(participants, chatId);
-        privateChats.put(chatId, chat);
-    }
-
-    private void createChatWithId(int chatId, List<Integer> participants) {
-        Chat chat = new Chat(participants, chatId);
-        chats.put(chatId, chat);
     }
 
     @Override
     public synchronized int createChat(List<Integer> participants) throws Exception {
-        int chatId = chats.size() + privateChats.size();
-        Chat chat = new Chat(participants, chatId);
-        chats.put(chatId, chat);
-        return chatId;
-    }
-
-    @Override
-    public synchronized int createPrivateChat(int id1, int id2) throws Exception {
-        int chatId = getPrivateChat(id1, id2);
-        if (chatId != -1) {
-            return -chatId - 1;
-        }
-        chatId = privateChats.size() + chats.size();
-        List<Integer> participants = new ArrayList<>();
-        participants.add(id1);
-        participants.add(id2);
-        Chat chat = new Chat(participants, chatId);
-        privateChats.put(chatId, chat);
-        return chatId;
-    }
-
-    @Override
-    public synchronized int getPrivateChat(int id1, int id2) throws Exception {
-        for (Map.Entry<Integer, Chat> it : privateChats.entrySet()) {
-            List<Integer> userIds = it.getValue().getParticipantIds();
-            if (id1 == userIds.get(0) && id2 == userIds.get(1) || id1 == userIds.get(1) && id2 == userIds.get(0)) {
-                return it.getValue().getId();
+        int chatId = -1;
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate("INSERT INTO chats (temp) VALUES (\'temp\')", Statement.RETURN_GENERATED_KEYS);
+            ResultSet rs = stmt.getGeneratedKeys();
+            while (rs.next()) {
+                chatId = rs.getInt(1);
             }
+            Chat chat = new Chat(participants, chatId);
+            chats.put(chatId, chat);
+            for (Integer userId : participants) {
+                String sql = String.format("INSERT INTO userschat (user_id, chat_id) VALUES (%d, %d)",userId, chatId);
+                stmt.executeUpdate(sql);
+            }
+        } catch (Exception e) {
+            System.err.println("ChatStore: failed to write data " + e.getMessage());
         }
-        return -1;
+        return chatId;
     }
 
     @Override
     public Map<Integer, Chat> getChatList() throws Exception {
-        Map<Integer, Chat> result = chats;
-        for (Map.Entry<Integer, Chat> it : privateChats.entrySet()) {
-            chats.put(it.getKey(), it.getValue());
-        }
-        return result;
+        return chats;
     }
 
     @Override
     public Chat getChat(Integer id) throws Exception {
-        Chat result = chats.get(id);
-        if (result == null) {
-            return privateChats.get(id);
-        }
-        return result;
+        return chats.get(id);
     }
 
     @Override
     public void close() throws Exception {
-        /*for (Map.Entry<Integer, Chat> pair : chats.entrySet()) {
-            pair.getValue().close();
-        }*/
     }
 }

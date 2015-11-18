@@ -40,7 +40,8 @@ public class MyJdbc {
 
         stmt = c.createStatement();
         sql = "CREATE TABLE IF NOT EXISTS chats " +
-                "(ID SERIAL PRIMARY KEY)";
+                "(ID SERIAL PRIMARY KEY," +
+                " TEMP TEXT NOT NULL)";
         stmt.executeUpdate(sql);
         stmt.close();
 

@@ -15,10 +15,10 @@ public class Chat {
     private MessageStore messageStore;
     private List<Integer> participantIds;
 
-    public Chat(List<Integer> participantIds, Integer id) {
-        this.participantIds = participantIds;
+    public Chat( Integer id) {
         this.id = id;
-        StringBuilder builder = new StringBuilder();
+        participantIds = new ArrayList<>();
+        /*StringBuilder builder = new StringBuilder();
         builder.append(id);
         builder.append(" ");
         builder.append(participantIds.size());
@@ -28,7 +28,12 @@ public class Chat {
             builder.append(" ");
         }
         String chatData = builder.toString();
-        this.messageStore = new FileMessageStore(String.format("Chat%d", id), chatData);
+        this.messageStore = new FileMessageStore(String.format("Chat%d", id), chatData);*/
+    }
+
+    public Chat(List<Integer> participantIds, Integer id) {
+        this.id = id;
+        this.participantIds = participantIds;
     }
 
     public Integer getId() {
@@ -41,6 +46,18 @@ public class Chat {
 
     public List<Integer> getParticipantIds() {
         return participantIds;
+    }
+
+    public void setParticipantIds(List<Integer> participantIds) {
+        this.participantIds = participantIds;
+    }
+
+    public boolean addParticipant(int id) {
+        if (participantIds.contains(id)) {
+            return false;
+        }
+        participantIds.add(id);
+        return true;
     }
 
     public void addMessage(int authorId, String authorName, String message) {

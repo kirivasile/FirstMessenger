@@ -86,6 +86,6 @@ public class ChatHistoryCommand implements Command {
 
     @Override
     public String toString() {
-        return "/history";
+        return "/chat_history";
     }
 }
