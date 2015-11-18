@@ -2,7 +2,6 @@ package com.github.kirivasile.technotrack.message;
 
 
 import java.io.Serializable;
-import java.util.Calendar;
 
 /**
  * Created by Kirill on 16.11.2015.
@@ -17,7 +16,8 @@ public class Message implements Serializable {
     }
 
     protected int id;
-    protected String from;
+    protected int authorId;
+    protected String authorName;
     protected String message;
     protected MessageType type;
 
@@ -33,12 +33,12 @@ public class Message implements Serializable {
         this.id = id;
     }
 
-    public String getFrom() {
-        return from;
+    public String getAuthorName() {
+        return authorName;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
     public String getMessage() {
@@ -55,5 +55,13 @@ public class Message implements Serializable {
 
     public void setType(MessageType type) {
         this.type = type;
+    }
+
+    public int getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(int authorId) {
+        this.authorId = authorId;
     }
 }

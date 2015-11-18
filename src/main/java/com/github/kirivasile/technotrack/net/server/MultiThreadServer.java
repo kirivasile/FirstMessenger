@@ -2,7 +2,6 @@ package com.github.kirivasile.technotrack.net.server;
 
 import com.github.kirivasile.technotrack.authorization.FileUserStore;
 import com.github.kirivasile.technotrack.message.FileChatStore;
-import com.github.kirivasile.technotrack.message.FileMessageStore;
 import com.github.kirivasile.technotrack.session.SessionManager;
 
 import java.io.DataInputStream;
@@ -11,6 +10,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,13 +25,20 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
     private List<Thread> clientThreads;
     private DataStore dataStore;
     private SessionManager sessionManager;
+    private Connection connection;
 
     public MultiThreadServer(int serverPort) {
-        this.serverPort = serverPort;
-        isStopped = false;
-        clientThreads = new ArrayList<>();
-        dataStore = new DataStore(new FileUserStore(), new FileMessageStore(), new FileChatStore());
-        sessionManager = new SessionManager();
+        try {
+            this.serverPort = serverPort;
+            isStopped = false;
+            clientThreads = new ArrayList<>();
+            connection = DriverManager.getConnection("jdbc:postgresql://178.62.140.149:5432/kirivasile",
+                    "senthil", "ubuntu");
+            dataStore = new DataStore(new FileUserStore(connection), new FileChatStore(), connection);
+            sessionManager = new SessionManager();
+        } catch (Exception e) {
+            System.err.println("Server: exception caught " + e.toString());
+        }
     }
 
 
@@ -85,6 +93,7 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
         try {
             serverSocket.close();
             dataStore.close();
+            connection.close();
             for (Thread it : clientThreads) {
                 // FIXME: потоки никогда не остановятся, потому что для них нет никакого механизма останова
                 it.join();

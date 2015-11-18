@@ -1,5 +1,8 @@
 package com.github.kirivasile.technotrack.message;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.*;
 
 /**
@@ -14,6 +17,51 @@ public class FileChatStore implements ChatStore {
     public FileChatStore() {
         chats = new TreeMap<>();
         privateChats = new HashMap<>();
+        //readDataFromFile();
+    }
+
+    public void readDataFromFile() {
+        File directory = new File("messages");
+        if (!directory.exists() || !directory.isDirectory()) {
+            System.err.println("FileChatStore: failed to open directory");
+        }
+        File[] files = directory.listFiles();
+        for (File file : files) {
+            if (file.getName().startsWith("data")) {
+                try (BufferedReader reader = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
+                    String line = reader.readLine();
+                    String[] args = line.split("\\s+");
+                    int chatId = Integer.parseInt(args[0]);
+                    List<Integer> participants = new ArrayList<>();
+                    int size = Integer.parseInt(args[1]);
+                    for (int i = 0; i < size; ++i) {
+                        participants.add(Integer.parseInt(args[i + 2]));
+                    }
+                    if (participants.size() == 2) {
+                        createPrivateChatWithId(chatId, participants.get(0), participants.get(1));
+                    } else {
+                        createChatWithId(chatId, participants);
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.err.println("FileMessageStore: Incorrect chat data");
+                } catch (Exception e) {
+                    System.err.println("FileMessageStore: Error in reading from file: " + e.toString());
+                }
+            }
+        }
+    }
+
+    private void createPrivateChatWithId(int chatId, int userId1, int userId2) {
+        List<Integer> participants = new ArrayList<>();
+        participants.add(userId1);
+        participants.add(userId2);
+        Chat chat = new Chat(participants, chatId);
+        privateChats.put(chatId, chat);
+    }
+
+    private void createChatWithId(int chatId, List<Integer> participants) {
+        Chat chat = new Chat(participants, chatId);
+        chats.put(chatId, chat);
     }
 
     @Override
@@ -61,7 +109,6 @@ public class FileChatStore implements ChatStore {
 
     @Override
     public Chat getChat(Integer id) throws Exception {
-        //return chats.get(id);
         Chat result = chats.get(id);
         if (result == null) {
             return privateChats.get(id);
@@ -69,7 +116,10 @@ public class FileChatStore implements ChatStore {
         return result;
     }
 
-    public boolean isAPrivateChat(Integer id) throws Exception {
-        return privateChats.containsKey(id);
+    @Override
+    public void close() throws Exception {
+        /*for (Map.Entry<Integer, Chat> pair : chats.entrySet()) {
+            pair.getValue().close();
+        }*/
     }
 }

@@ -22,7 +22,7 @@ public class HelpCommand implements Command {
                 "  /user_info - get the information about you\n" +
                 "  /user_info <nick> - get the information about \'nick\'\n" +
                 "  /user_pass <old_pass> <new_pass> - changes the password from \'old_pass\' to \'new_pass\'\n" +
-                "  /history <n> - show last n messages. Without parameter \'n\' show the full history\n" +
+                "  /chat_history <n> - show messages in \'n\' chat\n" +
                 "  /find <regex> - find the message using regular expression \'regex\'\n" +
                 "  /exit - exit the program\n" +
                 "  /help - show the list of commands";

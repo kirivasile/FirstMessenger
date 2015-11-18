@@ -3,8 +3,8 @@ package com.github.kirivasile.technotrack.net.server;
 import com.github.kirivasile.technotrack.authorization.UserStore;
 import com.github.kirivasile.technotrack.commands.*;
 import com.github.kirivasile.technotrack.message.ChatStore;
-import com.github.kirivasile.technotrack.message.MessageStore;
 
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,19 +13,18 @@ import java.util.Map;
  */
 public class DataStore {
     private UserStore userStore;
-    private MessageStore messageStore;
     private Map<String, Command> commandsStore;
     private ChatStore chatStore;
+    private Connection connection;
 
-    public DataStore(UserStore fileUserStore, MessageStore messageStore, ChatStore chatStore) {
+    public DataStore(UserStore fileUserStore, ChatStore chatStore, Connection c) {
         this.userStore = fileUserStore;
-        this.messageStore = messageStore;
         this.chatStore = chatStore;
+        this.connection = c;
         commandsStore = new HashMap<>();
         commandsStore.put("/help", new HelpCommand());
         commandsStore.put("/login", new LoginCommand());
         commandsStore.put("/user", new UserCommand());
-        commandsStore.put("/message", new HistoryCommand());
         commandsStore.put("/find", new FindCommand());
         commandsStore.put("/register", new RegisterCommand());
         commandsStore.put("/user_info", new UserInfoCommand());
@@ -34,14 +33,11 @@ public class DataStore {
         commandsStore.put("/chat_list", new ChatListCommand());
         commandsStore.put("/user_list", new UserListCommand());
         commandsStore.put("/chat_send", new ChatSendCommand());
+        commandsStore.put("/chat_history", new ChatHistoryCommand());
     }
 
     public UserStore getUserStore() {
         return userStore;
-    }
-
-    public MessageStore getMessageStore() {
-        return messageStore;
     }
 
     public ChatStore getChatStore() {
@@ -52,9 +48,10 @@ public class DataStore {
         return commandsStore;
     }
 
-    public void close() throws Exception {
-        userStore.close();
-        messageStore.close();
+    public Connection getConnection() {
+        return connection;
+    }
 
+    public void close() throws Exception {
     }
 }

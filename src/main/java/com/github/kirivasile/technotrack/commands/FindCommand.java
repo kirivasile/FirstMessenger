@@ -15,7 +15,7 @@ import java.util.Map;
 public class FindCommand implements Command {
     @Override
     public void run(String[] args, Session session) throws Exception {
-        DataOutputStream writer = session.getWriter();
+        /*DataOutputStream writer = session.getWriter();
         Protocol<AnswerMessage> protocol = new SerializationProtocol<>();
         String message = "";
         AnswerMessage.Value success;
@@ -42,7 +42,7 @@ public class FindCommand implements Command {
                 success = AnswerMessage.Value.SUCCESS;
             }
         }
-        writer.write(protocol.encode(new AnswerMessage(message, success)));
+        writer.write(protocol.encode(new AnswerMessage(message, success)));*/
     }
 
     @Override

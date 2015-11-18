@@ -43,9 +43,7 @@ public class MessageListener implements Runnable {
         String message = answer.getMessage();
         switch (type) {
             case SUCCESS:
-                if (!message.equals("Message delivered")) {
-                    System.out.println(message);
-                }
+                System.out.println(message);
                 break;
             case ERROR:
                 System.out.println("Error:");

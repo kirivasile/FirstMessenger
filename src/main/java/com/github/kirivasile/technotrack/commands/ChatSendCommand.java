@@ -53,6 +53,7 @@ public class ChatSendCommand implements Command {
                 writer.write(protocol.encode(new AnswerMessage(message, success)));
                 return;
             }
+            chat.addMessage(authorId, authorName, messageFromUser);
             SessionManager manager = session.getSessionManager();
             for (Integer id : participants) {
                 Session destinationSession = manager.getSessionById(id);

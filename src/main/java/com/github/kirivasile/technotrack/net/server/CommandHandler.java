@@ -29,13 +29,11 @@ public class CommandHandler {
         try {
             Map<String, Command> commands = dataStore.getCommandsStore();
             AuthorizationService service = new AuthorizationService(dataStore.getUserStore());
-            MessageStore fileMessageStore = dataStore.getMessageStore();
             Session session = new Session(reader, writer, service, dataStore, sessionManager);
             sessionManager.addSession(session);
             Protocol<AnswerMessage> answerProtocol = new SerializationProtocol<AnswerMessage>();
             Protocol<Message> readProtocol = new SerializationProtocol<>();
             while (true) {
-                //String command = reader.readUTF();
                 byte[] readData = new byte[1024 * 64];
                 reader.read(readData);
                 Message received = readProtocol.decode(readData);
@@ -47,21 +45,13 @@ public class CommandHandler {
                     String[] parsedCommand = command.split("\\s+");
                     Command commandClass = commands.get(parsedCommand[0]);
                     if (commandClass == null) {
-                        //writer.writeUTF("Wrong command");
                         String str = "Wrong command";
                         AnswerMessage answer = new AnswerMessage(str , AnswerMessage.Value.ERROR);
                         writer.write(answerProtocol.encode(answer));
                         continue;
                     }
                     commandClass.run(parsedCommand, session);
-                } else if (session.getCurrentUserName() != null) {
-                    fileMessageStore.addMessage(session.getCurrentUserName(), received.getMessage());
-                    //writer.writeUTF("Message delivered");
-                    String str = "Message delivered";
-                    AnswerMessage answer = new AnswerMessage(str, AnswerMessage.Value.SUCCESS);
-                    writer.write(answerProtocol.encode(answer));
                 } else {
-                    //writer.writeUTF("Please login or sign up first");
                     String str = "Please login or sign up first";
                     AnswerMessage answer = new AnswerMessage(str, AnswerMessage.Value.ERROR);
                     writer.write(answerProtocol.encode(answer));

@@ -17,4 +17,5 @@ public interface ChatStore {
     int getPrivateChat(int id1, int id2) throws Exception;
     Map<Integer, Chat> getChatList() throws Exception;
     Chat getChat(Integer id) throws Exception;
+    void close() throws Exception;
 }

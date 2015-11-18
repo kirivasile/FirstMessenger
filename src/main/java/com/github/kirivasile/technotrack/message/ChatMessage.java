@@ -6,9 +6,6 @@ import java.util.Calendar;
  * Created by Kirill on 18.10.2015.
  */
 public class ChatMessage extends Message {
-    //private int id; //Will be implemented with database
-    //private String from;
-    //private String message;
     private Calendar date;
 
     public ChatMessage() {
@@ -16,13 +13,14 @@ public class ChatMessage extends Message {
     }
 
     public boolean checkAuthor(String from) {
-        return this.from.equals(from);
+        return this.authorName.equals(from);
     }
 
     public String toFileString() {
         /*Format
         * Id
-        * From
+        * AuthorId
+        * AuthorName
         * Message
         * dd::mm::yy::hh::mm::ss
         * */
@@ -32,7 +30,7 @@ public class ChatMessage extends Message {
         String dayMonthYear = String.format("%d:%d:%d", day, month, year);
         String time = date.get(Calendar.HOUR_OF_DAY) + ":" +
                       date.get(Calendar.MINUTE) + ":" + date.get(Calendar.SECOND);
-        return String.format("%d\n%s\n%s\n%s:%s", id, from, message, dayMonthYear, time);
+        return String.format("%d\n%d\n%s\n%s\n%s:%s", id, authorId, authorName, message, dayMonthYear, time);
     }
 
     public String toString() {
@@ -43,7 +41,7 @@ public class ChatMessage extends Message {
         String time = date.get(Calendar.HOUR_OF_DAY) + ":" +
                       date.get(Calendar.MINUTE) + ":" + date.get(Calendar.SECOND);
         return String.format("Id: %d\nFrom: %s\nmessage: \"%s\"\n" +
-                "date: %s, time: %s\n", id, from, message, dayMonthYear, time);
+                "date: %s, time: %s\n", id, authorName, message, dayMonthYear, time);
     }
 
     public String getMessage() {
