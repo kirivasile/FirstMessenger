@@ -12,11 +12,11 @@ import java.util.*;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
-public class FileChatStore implements ChatStore {
+public class DBChatStore implements ChatStore {
     private Map<Integer, Chat> chats;
     private Connection connection;
 
-    public FileChatStore(Connection conn) {
+    public DBChatStore(Connection conn) {
         chats = new TreeMap<>();
         this.connection = conn;
         try {
@@ -27,7 +27,7 @@ public class FileChatStore implements ChatStore {
                     int userId = r.getInt("user_id");
                     Chat chat = chats.get(chatId);
                     if (chat == null) {
-                        chat = new Chat(chatId);
+                        chat = new Chat(chatId, conn);
                         chat.addParticipant(userId);
                         chats.put(chatId, chat);
                     } else {
@@ -51,7 +51,7 @@ public class FileChatStore implements ChatStore {
             while (rs.next()) {
                 chatId = rs.getInt(1);
             }
-            Chat chat = new Chat(participants, chatId);
+            Chat chat = new Chat(participants, chatId, connection);
             chats.put(chatId, chat);
             for (Integer userId : participants) {
                 String sql = String.format("INSERT INTO userschat (user_id, chat_id) VALUES (%d, %d)",userId, chatId);

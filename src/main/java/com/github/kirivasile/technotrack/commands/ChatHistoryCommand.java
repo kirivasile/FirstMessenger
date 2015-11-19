@@ -35,11 +35,10 @@ public class ChatHistoryCommand implements Command {
                 return;
             }
             StringBuilder stringBuilder = new StringBuilder();
-            Map<Integer, ChatMessage> messageMap = chat.getMessageMap();
-            for (Map.Entry<Integer, ChatMessage> pair : messageMap.entrySet()) {
-                if (pair.getValue().checkAuthor(session.getCurrentUserName())) {
-                    stringBuilder.append(pair.getValue());
-                }
+            Map<Integer, Message> messageMap = chat.getMessageMap();
+            for (Map.Entry<Integer, Message> pair : messageMap.entrySet()) {
+                stringBuilder.append(pair.getValue().toString());
+                stringBuilder.append("\n");
             }
             message = stringBuilder.toString();
             success = AnswerMessage.Value.SUCCESS;
@@ -47,41 +46,6 @@ public class ChatHistoryCommand implements Command {
             success = AnswerMessage.Value.NUM_ARGS;
         }
         writer.write(protocol.encode(new AnswerMessage(message, success)));
-
-        /*if (args.length == 1) {
-            StringBuilder stringBuilder = new StringBuilder();
-            Map<Integer, ChatMessage> messageMap = session.getDataStore().getMessageStore().getMessagesMap();
-            for (Map.Entry<Integer, ChatMessage> pair : messageMap.entrySet()) {
-                if (pair.getValue().checkAuthor(session.getCurrentUserName())) {
-                    stringBuilder.append(pair.getValue());
-                }
-            }
-            //writer.writeUTF(stringBuilder.toString());
-            message = stringBuilder.toString();
-            success = AnswerMessage.Value.SUCCESS;
-        } else if (args.length == 2) {
-            List<ChatMessage> listOfChatMessages = new ArrayList<>();
-            Map<Integer, ChatMessage> messageMap = session.getDataStore().getMessageStore().getMessagesMap();
-            for (Map.Entry<Integer, ChatMessage> pair : messageMap.entrySet()) {
-                if (pair.getValue().checkAuthor(session.getCurrentUserName())) {
-                    listOfChatMessages.add(pair.getValue());
-                }
-            }
-            int requiredNumMessages = Integer.parseInt(args[1]);
-            int currentNumMessages = listOfChatMessages.size();
-            int minNum = requiredNumMessages > currentNumMessages ? currentNumMessages : requiredNumMessages;
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = listOfChatMessages.size() - 1, j = 0; j < minNum; --i, ++j) {
-                stringBuilder.append(listOfChatMessages.get(i));
-            }
-            //writer.writeUTF(stringBuilder.toString());
-            message = stringBuilder.toString();
-            success = AnswerMessage.Value.SUCCESS;
-        } else {
-            //writer.writeUTF("Wrong number of arguments");
-            success = AnswerMessage.Value.NUM_ARGS;
-        }
-        writer.write(protocol.encode(new AnswerMessage(message, success)));*/
     }
 
     @Override

@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Created by Kirill on 13.10.2015.
  */
-public class CommandHandler {
+public class CommandHandler implements Runnable{
     private DataInputStream reader;
     private DataOutputStream writer;
     private DataStore dataStore;
@@ -25,13 +25,14 @@ public class CommandHandler {
         this.dataStore = dataStore;
     }
 
-    public void handle() {
+    @Override
+    public void run() {
         try {
             Map<String, Command> commands = dataStore.getCommandsStore();
             AuthorizationService service = new AuthorizationService(dataStore.getUserStore());
             Session session = new Session(reader, writer, service, dataStore, sessionManager);
             sessionManager.addSession(session);
-            Protocol<AnswerMessage> answerProtocol = new SerializationProtocol<AnswerMessage>();
+            Protocol<AnswerMessage> answerProtocol = new SerializationProtocol<>();
             Protocol<Message> readProtocol = new SerializationProtocol<>();
             while (true) {
                 byte[] readData = new byte[1024 * 64];
@@ -60,7 +61,7 @@ public class CommandHandler {
             }
 
             // FIXME: вроде если закроете в одном потоке, дата стор будет закрыт для всех. Нехорошо
-            //dataStore.close();
+            // Исправил
         } catch (Exception e) {
             System.err.println("Exception in reading command " + e.toString());
         }

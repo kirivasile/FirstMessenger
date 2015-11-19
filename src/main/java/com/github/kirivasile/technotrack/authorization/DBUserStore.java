@@ -14,12 +14,12 @@ import java.util.Map;
 /**
  * Created by Kirill on 29.09.2015.
  */
-public class FileUserStore implements AutoCloseable, UserStore {
+public class DBUserStore implements AutoCloseable, UserStore {
     /*To reduce the number of writings, I've created a local cache of users, which would be used for reading*/
     private Map<Integer, User> users;
     private Connection connection;
 
-    public FileUserStore(Connection conn) {
+    public DBUserStore(Connection conn) {
         try {
             this.connection = conn;
             users = new HashMap<>();

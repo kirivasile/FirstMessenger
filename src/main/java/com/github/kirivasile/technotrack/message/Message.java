@@ -17,7 +17,6 @@ public class Message implements Serializable {
 
     protected int id;
     protected int authorId;
-    protected String authorName;
     protected String message;
     protected MessageType type;
 
@@ -31,14 +30,6 @@ public class Message implements Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getAuthorName() {
-        return authorName;
-    }
-
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
     }
 
     public String getMessage() {
@@ -63,5 +54,9 @@ public class Message implements Serializable {
 
     public void setAuthorId(int authorId) {
         this.authorId = authorId;
+    }
+
+    public String toString() {
+        return String.format("Author %d: %s", authorId, message);
     }
 }

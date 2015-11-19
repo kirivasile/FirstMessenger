@@ -51,7 +51,7 @@ public class ClientMain {
             line = reader.readLine();
             Message writeMessage;
             if (line.startsWith("/")) {
-                writeMessage = new CommandMessage();
+                writeMessage = new Message();
                 writeMessage.setMessage(line);
                 messagesToWrite.put(writeMessage);
                 if (line.equals("/exit")) {
@@ -60,7 +60,7 @@ public class ClientMain {
                     break;
                 }
             } else {
-                writeMessage = new ChatMessage();
+                writeMessage = new Message();
                 writeMessage.setMessage(line);
                 messagesToWrite.put(writeMessage);
             }

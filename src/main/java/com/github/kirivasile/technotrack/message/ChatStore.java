@@ -13,8 +13,6 @@ import java.util.Map;
  */
 public interface ChatStore {
     int createChat(List<Integer> participants) throws Exception;
-    //int createPrivateChat(int id1, int id2) throws Exception;
-    //int getPrivateChat(int id1, int id2) throws Exception;
     Map<Integer, Chat> getChatList() throws Exception;
     Chat getChat(Integer id) throws Exception;
     void close() throws Exception;

@@ -1,7 +1,7 @@
 package com.github.kirivasile.technotrack.message;
 
+import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,26 +14,20 @@ public class Chat {
     private Integer id;
     private MessageStore messageStore;
     private List<Integer> participantIds;
+    private Connection connection;
 
-    public Chat( Integer id) {
+    public Chat(Integer id, Connection conn) {
         this.id = id;
         participantIds = new ArrayList<>();
-        /*StringBuilder builder = new StringBuilder();
-        builder.append(id);
-        builder.append(" ");
-        builder.append(participantIds.size());
-        builder.append(" ");
-        for (Integer it : participantIds) {
-            builder.append(it);
-            builder.append(" ");
-        }
-        String chatData = builder.toString();
-        this.messageStore = new FileMessageStore(String.format("Chat%d", id), chatData);*/
+        this.connection = conn;
+        messageStore = new DBMessageStore(connection, this);
     }
 
-    public Chat(List<Integer> participantIds, Integer id) {
+    public Chat(List<Integer> participantIds, Integer id, Connection conn) {
         this.id = id;
         this.participantIds = participantIds;
+        this.connection = conn;
+        this.messageStore = new DBMessageStore(conn, this);
     }
 
     public Integer getId() {
@@ -61,10 +55,10 @@ public class Chat {
     }
 
     public void addMessage(int authorId, String authorName, String message) {
-        messageStore.addMessage(authorId, authorName, message);
+        messageStore.addMessage(authorId, authorName, message, this);
     }
 
-    public Map<Integer, ChatMessage> getMessageMap() {
+    public Map<Integer, Message> getMessageMap() {
         return messageStore.getMessagesMap();
     }
 

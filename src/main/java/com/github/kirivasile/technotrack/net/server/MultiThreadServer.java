@@ -1,7 +1,7 @@
 package com.github.kirivasile.technotrack.net.server;
 
-import com.github.kirivasile.technotrack.authorization.FileUserStore;
-import com.github.kirivasile.technotrack.message.FileChatStore;
+import com.github.kirivasile.technotrack.authorization.DBUserStore;
+import com.github.kirivasile.technotrack.message.DBChatStore;
 import com.github.kirivasile.technotrack.session.SessionManager;
 
 import java.io.DataInputStream;
@@ -34,7 +34,7 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
             clientThreads = new ArrayList<>();
             connection = DriverManager.getConnection("jdbc:postgresql://178.62.140.149:5432/kirivasile",
                     "senthil", "ubuntu");
-            dataStore = new DataStore(new FileUserStore(connection), new FileChatStore(connection), connection);
+            dataStore = new DataStore(new DBUserStore(connection), new DBChatStore(connection), connection);
             sessionManager = new SessionManager();
         } catch (Exception e) {
             System.err.println("Server: exception caught " + e.toString());
@@ -52,18 +52,11 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
             while (!isStopped()) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client connected.");
-                Thread thread = new Thread(() -> {
-                    try {
-                        DataInputStream in = new DataInputStream(clientSocket.getInputStream());
-                        DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+                DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+                DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+                Thread thread = new Thread(new CommandHandler(in, out, dataStore, sessionManager));
                         // TODO: лучше CommandHandler сделать Runnable в вашем случае
                         // и передавать его в new Thread() - будет читаемее
-                        CommandHandler commandHandler = new CommandHandler(in, out, dataStore, sessionManager);
-                        commandHandler.handle();
-                    } catch (IOException e) {
-                        System.err.println("ServerWork: Error in client thread of server " + e.toString());
-                    }
-                });
                 clientThreads.add(thread);
                 thread.start();
             }
@@ -94,10 +87,12 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
             serverSocket.close();
             dataStore.close();
             connection.close();
-            for (Thread it : clientThreads) {
+            //for (Thread it : clientThreads) {
                 // FIXME: потоки никогда не остановятся, потому что для них нет никакого механизма останова
-                it.join();
-            }
+                //it.join();
+                //По поводу остановки я подходил к Дмитрию на семинаре. Мы пока не смогли сделать так, чтобы
+                //потоки останавливались без задержки
+            //}
         } catch (Exception e) {
             System.err.println("Server: error in closing: " + e.toString());
         }
