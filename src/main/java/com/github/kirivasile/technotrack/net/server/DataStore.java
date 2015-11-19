@@ -25,7 +25,7 @@ public class DataStore {
         commandsStore.put("/help", new HelpCommand());
         commandsStore.put("/login", new LoginCommand());
         commandsStore.put("/user", new UserCommand());
-        commandsStore.put("/find", new FindCommand());
+        commandsStore.put("/chat_find", new ChatFindCommand());
         commandsStore.put("/register", new RegisterCommand());
         commandsStore.put("/user_info", new UserInfoCommand());
         commandsStore.put("/user_pass", new ChangePasswordCommand());

@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Created by Kirill on 18.10.2015.
  */
-public class FindCommand implements Command {
+public class ChatFindCommand implements Command {
     @Override
     public void run(String[] args, Session session) throws Exception {
         DataOutputStream writer = session.getWriter();
@@ -50,6 +50,6 @@ public class FindCommand implements Command {
 
     @Override
     public String toString() {
-        return "/find";
+        return "/chat_find";
     }
 }

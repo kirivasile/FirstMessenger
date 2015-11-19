@@ -13,6 +13,7 @@ import java.io.DataOutputStream;
 public class HelpCommand implements Command {
     @Override
     public void run(String[] args, Session session) throws Exception {
+        //Немного устарел
         DataOutputStream writer = session.getWriter();
         Protocol<AnswerMessage> protocol = new SerializationProtocol<>();
         String message = "List of commands:\n" +
@@ -27,7 +28,6 @@ public class HelpCommand implements Command {
                 "  /exit - exit the program\n" +
                 "  /help - show the list of commands";
         writer.write(protocol.encode(new AnswerMessage(message, AnswerMessage.Value.SUCCESS)));
-        //writer.flush();
     }
 
     public String toString() {
