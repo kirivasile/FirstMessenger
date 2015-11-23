@@ -56,9 +56,8 @@ public class MessageListener implements Runnable {
                 System.out.println("Error:\nWrong number of arguments");
                 break;
             case CHAT:
-                String from = answer.getFrom();
                 int id = answer.getId();
-                System.out.println(String.format("%s(id:%d): %s", from, id, message));
+                System.out.println(String.format("%d: %s", id, message));
                 break;
         }
     }

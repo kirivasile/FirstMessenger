@@ -10,5 +10,4 @@ public interface MessageStore {
     void addMessage(int authorId, String from, String message, Chat chat) throws Exception;
     Map<Integer, Message> getMessagesMap() throws Exception;
     List<Message> getMessageByRegex(String regex) throws Exception;
-    void close() throws Exception;
 }

@@ -13,37 +13,17 @@ import java.util.*;
  * E-mail: kirivasile@yandex.ru
  */
 public class DBChatStore implements ChatStore {
-    private Map<Integer, Chat> chats;
     private Connection connection;
+    private QueryExecutor executor;
 
     public DBChatStore(Connection conn) {
-        chats = new TreeMap<>();
         this.connection = conn;
-        try {
-            QueryExecutor executor = new QueryExecutor();
-            executor.execQuery(connection, "SELECT user_id, chat_id FROM userschat", (r) -> {
-                while (r.next()) {
-                    int chatId = r.getInt("chat_id");
-                    int userId = r.getInt("user_id");
-                    Chat chat = chats.get(chatId);
-                    if (chat == null) {
-                        chat = new Chat(chatId, conn);
-                        chat.addParticipant(userId);
-                        chats.put(chatId, chat);
-                    } else {
-                        chat.addParticipant(userId);
-                    }
-                }
-                return null;
-            });
-        } catch (Exception e) {
-            System.err.println("ChatStore: failed to read data " + e.getMessage());
-        }
+        this.executor = new QueryExecutor();
     }
 
     @Override
     public synchronized int createChat(List<Integer> participants) throws Exception {
-        int chatId = -1;
+        /*int chatId = -1;
         try {
             Statement stmt = connection.createStatement();
             stmt.executeUpdate("INSERT INTO chats (temp) VALUES (\'temp\')", Statement.RETURN_GENERATED_KEYS);
@@ -51,29 +31,67 @@ public class DBChatStore implements ChatStore {
             while (rs.next()) {
                 chatId = rs.getInt(1);
             }
-            Chat chat = new Chat(participants, chatId, connection);
-            chats.put(chatId, chat);
             for (Integer userId : participants) {
                 String sql = String.format("INSERT INTO userschat (user_id, chat_id) VALUES (%d, %d)",userId, chatId);
                 stmt.executeUpdate(sql);
             }
         } catch (Exception e) {
             System.err.println("ChatStore: failed to write data " + e.getMessage());
+        }*/
+        int chatId = -1;
+        String sql = "INSERT INTO chats (temp) VALUES (?)";
+        Map<Integer, Object> queryArgs = new HashMap<>();
+        queryArgs.put(1, "temp");
+        chatId = executor.execUpdate(connection, sql, queryArgs, (r) -> {
+            if (r.next()) {
+                return r.getInt(1);
+            }
+            return -1;
+        });
+        sql = "INSERT INTO userschat (user_id, chat_id) VALUES (?, ?)";
+        for (Integer userId : participants) {
+            queryArgs.clear();
+            queryArgs.put(1, userId);
+            queryArgs.put(2, chatId);
+            executor.execUpdate(connection, sql, queryArgs);
         }
         return chatId;
     }
 
     @Override
     public Map<Integer, Chat> getChatList() throws Exception {
-        return chats;
+        String sql = "SELECT * FROM userschat LIMIT 10000";
+        return executor.execQuery(connection, sql, (r) -> {
+            Map<Integer, Chat> result = new HashMap<>();
+            while (r.next()) {
+                int chatId = r.getInt("chat_id");
+                int userId = r.getInt("user_id");
+                Chat chat = result.get(chatId);
+                if (chat == null) {
+                    chat = new Chat(chatId, connection);
+                    chat.addParticipant(userId);
+                    result.put(chatId, chat);
+                } else {
+                    chat.addParticipant(userId);
+                }
+            }
+            return result;
+        });
     }
 
     @Override
     public Chat getChat(Integer id) throws Exception {
-        return chats.get(id);
-    }
-
-    @Override
-    public void close() throws Exception {
+        Chat result = new Chat(id, connection);
+        String sql = "SELECT * FROM userschat WHERE chat_id = ?";
+        Map<Integer, Object> queryArgs = new HashMap<>();
+        queryArgs.put(1, id);
+        executor.execQuery(connection, sql, queryArgs, (r) -> {
+            while (r.next()) {
+                int userId = r.getInt("user_id");
+                result.addParticipant(userId);
+            }
+            return null;
+        });
+        return result;
     }
 }

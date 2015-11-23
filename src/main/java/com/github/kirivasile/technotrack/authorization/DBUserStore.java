@@ -15,28 +15,13 @@ import java.util.Map;
 /**
  * Created by Kirill on 29.09.2015.
  */
-public class DBUserStore implements AutoCloseable, UserStore {
+public class DBUserStore implements UserStore {
     private Connection connection;
-    private PreparedStatement insertStatement;
     private QueryExecutor executor;
 
     public DBUserStore(Connection conn) {
         this.connection = conn;
         this.executor = new QueryExecutor();
-            /*users = new HashMap<>();
-            List<User> userList = executor.execQuery(connection, "SELECT * FROM USERS", (r) -> {
-                List<User> data = new ArrayList<>();
-                while (r.next()) {
-                    User u = new User(r.getString("login"), r.getString("password"), r.getString("nick"));
-                    int id = r.getInt("id");
-                    u.setId(id);
-                    data.add(u);
-                }
-                return data;
-            });
-            for (User it : userList) {
-                users.put(it.getId(), it);
-            }*/
     }
 
     @Override
@@ -44,11 +29,6 @@ public class DBUserStore implements AutoCloseable, UserStore {
         if (name == null) {
             return null;
         }
-        /*for (Map.Entry<Integer, User> pair : users.entrySet()) {
-            if (pair.getValue().getName().equals(name)) {
-                return pair.getValue();
-            }
-        }*/
         Map<Integer, Object> queryArgs = new HashMap<>();
         queryArgs.put(1, name);
         return executor.execQuery(connection, "SELECT * FROM USERS where LOGIN = ?", queryArgs, (r) -> {
@@ -89,17 +69,6 @@ public class DBUserStore implements AutoCloseable, UserStore {
         }
         int result = -1;
         try {
-            /*stmt.executeUpdate(String.format("INSERT INTO USERS (LOGIN, PASSWORD, NICK) " +
-                            "VALUES (\'%s\', \'%s\', \'%s\' )", user.getName(),
-                    Integer.toString(user.getPassword().hashCode()), user.getName()), Statement.RETURN_GENERATED_KEYS);*/
-            /*insertStatement.setString(1, user.getName());
-            insertStatement.setString(2, Integer.toString(user.getPassword().hashCode()));
-            insertStatement.setString(3, user.getName());
-            insertStatement.executeUpdate();
-            ResultSet rs = insertStatement.getGeneratedKeys();
-            while (rs.next()) {
-                result = rs.getInt(1);
-            }*/
             Map<Integer, Object> queryArgs = new HashMap<>();
             queryArgs.put(1, user.getName());
             queryArgs.put(2, Integer.toString(user.getPassword().hashCode()));
@@ -113,7 +82,7 @@ public class DBUserStore implements AutoCloseable, UserStore {
             });
         } catch (Exception e) {
             System.err.println("UserStore: failed to write data " + e.getMessage());
-            throw new Exception("Failed to add user");
+            throw e;
         }
         return result;
     }
@@ -121,11 +90,6 @@ public class DBUserStore implements AutoCloseable, UserStore {
     //Returns 1000 first objects
     @Override
     public List<User> getUserList() throws Exception{
-        /*List<User> result = new ArrayList<>();
-        for (Map.Entry<Integer, User> user : users.entrySet()) {
-            result.add(user.getValue());
-        }
-        return result;*/
         Map<Integer, Object> queryArgs = new HashMap<>();
         return executor.execQuery(connection, "SELECT * FROM USERS LIMIT 10000", queryArgs, (r) -> {
             List<User> data = new ArrayList<User>();
@@ -137,9 +101,5 @@ public class DBUserStore implements AutoCloseable, UserStore {
             }
             return data;
         });
-    }
-
-    @Override
-    public synchronized void close() throws Exception {
     }
 }

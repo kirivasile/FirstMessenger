@@ -50,7 +50,6 @@ public class ChatFindCommand implements Command {
                     stringBuilder.append("\n");
                 }
             }*/
-            message = stringBuilder.toString();
             MessageStore messageStore = chat.getMessageStore();
             List<Message> messages = messageStore.getMessageByRegex(regex);
             for (Message it : messages) {

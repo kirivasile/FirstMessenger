@@ -15,5 +15,4 @@ public interface ChatStore {
     int createChat(List<Integer> participants) throws Exception;
     Map<Integer, Chat> getChatList() throws Exception;
     Chat getChat(Integer id) throws Exception;
-    void close() throws Exception;
 }

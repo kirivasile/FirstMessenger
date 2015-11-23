@@ -10,5 +10,4 @@ public interface UserStore {
     List<User> getUserByName(String name) throws Exception;
     int addUser(User user) throws Exception;
     List<User> getUserList() throws Exception;
-    void close() throws Exception;
 }

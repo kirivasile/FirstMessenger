@@ -65,8 +65,4 @@ public class Chat {
     public MessageStore getMessageStore() {
         return messageStore;
     }
-
-    public void close() throws Exception {
-        messageStore.close();
-    }
 }
