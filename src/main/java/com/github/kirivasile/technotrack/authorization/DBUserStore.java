@@ -13,10 +13,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Kirill on 29.09.2015.
+ * Created by Kirill on 16.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Хранилище пользователей, реализованное на базе данных PostegreSql.
  */
 public class DBUserStore implements UserStore {
+    /**
+     * Соединение с БД
+     */
     private Connection connection;
+
+    /**
+     * Исполнитель SQL-запросов
+     */
     private QueryExecutor executor;
 
     public DBUserStore(Connection conn) {
@@ -24,6 +37,9 @@ public class DBUserStore implements UserStore {
         this.executor = new QueryExecutor();
     }
 
+    /**
+     * @see UserStore#getUserByName(String)
+     */
     @Override
     public synchronized List<User> getUserByName(String name) throws Exception {
         if (name == null) {
@@ -32,7 +48,7 @@ public class DBUserStore implements UserStore {
         Map<Integer, Object> queryArgs = new HashMap<>();
         queryArgs.put(1, name);
         return executor.execQuery(connection, "SELECT * FROM USERS where LOGIN = ?", queryArgs, (r) -> {
-            List<User> data = new ArrayList<User>();
+            List<User> data = new ArrayList<>();
             while (r.next()) {
                 User u = new User(r.getString("login"), r.getString("password"), r.getString("nick"));
                 int id = r.getInt("id");
@@ -43,6 +59,9 @@ public class DBUserStore implements UserStore {
         });
     }
 
+    /**
+     * @see UserStore#getUser(int)
+     */
     @Override
     public synchronized User getUser(int id) throws Exception {
         if (id < 0) {
@@ -61,6 +80,9 @@ public class DBUserStore implements UserStore {
         });
     }
 
+    /**
+     * @see UserStore#addUser(User)
+     */
     @Override
     public synchronized int addUser(User user) throws Exception {
         if (user == null) {
@@ -87,12 +109,14 @@ public class DBUserStore implements UserStore {
         return result;
     }
 
-    //Returns 1000 first objects
+    /**
+     * @see UserStore#getUserList()
+     */
     @Override
     public List<User> getUserList() throws Exception{
         Map<Integer, Object> queryArgs = new HashMap<>();
         return executor.execQuery(connection, "SELECT * FROM USERS LIMIT 10000", queryArgs, (r) -> {
-            List<User> data = new ArrayList<User>();
+            List<User> data = new ArrayList<>();
             while (r.next()) {
                 User u = new User(r.getString("login"), r.getString("password"), r.getString("nick"));
                 int id = r.getInt("id");

@@ -13,7 +13,16 @@ import java.util.List;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
+
+/**
+ * Отправка сообщения в чат: /chat_send
+ */
 public class ChatSendCommand implements Command {
+    /**
+     * @param args 0 - название команды, 1 - идентификатор чата, 2,3,4... - сообщение
+     * @param session Данные о текущей сессии
+     * @throws Exception
+     */
     @Override
     public void run(String[] args, Session session) throws Exception {
         DataOutputStream writer = session.getWriter();

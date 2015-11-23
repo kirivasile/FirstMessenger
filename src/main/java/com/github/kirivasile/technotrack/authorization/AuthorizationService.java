@@ -10,9 +10,18 @@ import java.io.*;
 import java.util.List;
 
 /**
- * Created by Kirill on 29.09.2015.
+ * Created by Kirill on 16.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Класс для авторизации и регистрации пользователей
  */
 public class AuthorizationService {
+    /**
+     * Хранилище пользователей.
+     */
     private UserStore userStore;
 
     private AuthorizationService() {
@@ -22,6 +31,13 @@ public class AuthorizationService {
         this.userStore = userStore;
     }
 
+    /**
+     * Регистрирует пользователя со следующими данными
+     * @param name Логин
+     * @param password Пароль
+     * @param session Данные о текущей сессии
+     * @throws Exception
+     */
     public synchronized void registerUser(String name, String password, Session session) throws Exception {
         DataOutputStream writer = session.getWriter();
         Protocol<AnswerMessage> protocol = new SerializationProtocol<>();
@@ -30,7 +46,6 @@ public class AuthorizationService {
         if (name != null && password != null) {
             List<User> userByName = userStore.getUserByName(name);
             if (userByName.size() > 0) {
-                //writer.writeUTF("Sorry, but user with this name has already registered");
                 message = "Sorry, but user with this name has already registered";
                 success = AnswerMessage.Value.ERROR;
             } else {
@@ -39,17 +54,23 @@ public class AuthorizationService {
                 session.setCurrentUserId(id);
                 message = String.format("User was successfully signed up" +
                                                 "Login: %s, Password: %s, Id: %d", name, password, id);
-                //writer.writeUTF(message);
                 success = AnswerMessage.Value.SUCCESS;
             }
         } else {
-            //writer.writeUTF("Incorrect name/password");
             message = "Incorrect name/password";
             success = AnswerMessage.Value.ERROR;
         }
         writer.write(protocol.encode(new AnswerMessage(message, success)));
     }
 
+
+    /**
+     * Авторизует пользователя со следующими данными
+     * @param name Логин
+     * @param password Пароль
+     * @param session Данные о текущей сессии
+     * @throws Exception
+     */
     public synchronized void authorizeUser(String name, String password, Session session) throws Exception {
         DataOutputStream writer = session.getWriter();
         Protocol<AnswerMessage> protocol = new SerializationProtocol<>();
@@ -61,22 +82,27 @@ public class AuthorizationService {
             if (user.getPassword().equals(Integer.toString(password.hashCode()))) {
                 session.setCurrentUserName(name);
                 session.setCurrentUserId(user.getId());
-                //writer.writeUTF("Hello, " + name + "!");
                 message = String.format("Hello, %s! Your id = %d", name, user.getId());
                 success = AnswerMessage.Value.SUCCESS;
             } else {
-                //writer.writeUTF("Password is incorrect");
                 message = "Password is incorrect";
                 success = AnswerMessage.Value.ERROR;
             }
         } else {
-            //writer.writeUTF("Sorry, but we didn't find user with this name: " + name);
             message = "Sorry, but we didn't find user with this name: " + name;
             success = AnswerMessage.Value.ERROR;
         }
         writer.write(protocol.encode(new AnswerMessage(message, success)));
     }
 
+
+    /**
+     * Меняет ник пользователя. (Присутствовало в старом ТЗ)
+     * @param id Идентификатор пользователя
+     * @param newNickName Новый ник
+     * @return Возвращает индикатор успешного выполнения метода
+     * @throws Exception
+     */
     public boolean changeUserNick(int id, String newNickName) throws Exception {
         User user = userStore.getUser(id);
         if (user == null) {
@@ -86,6 +112,16 @@ public class AuthorizationService {
         return true;
     }
 
+
+    /**
+     * Меняет пароль пользователя
+     * @param id Идентификатор пользователя
+     * @param oldPassword Старый пароль
+     * @param newPassword Новый пароль
+     * @return Возвращает результат выполнения метода: 1 - пароль не совпадает, 0 - успешное выполнение,
+     *         -1 - отсутствие такого пользователя
+     * @throws Exception
+     */
     public int changePassword(int id, String oldPassword, String newPassword) throws Exception {
         User user = userStore.getUser(id);
         if (user == null) {
@@ -101,6 +137,12 @@ public class AuthorizationService {
         }
     }
 
+    /**
+     * Возвращает класс User
+     * @param id Идентификатор пользователя
+     * @return Сам класс User
+     * @throws Exception
+     */
     public User getUserInfo(int id) throws Exception  {
         return userStore.getUser(id);
     }

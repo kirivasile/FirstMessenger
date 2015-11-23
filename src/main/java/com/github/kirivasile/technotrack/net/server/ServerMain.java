@@ -4,7 +4,13 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 /**
- * Created by Kirill on 08.11.2015.
+ * Created by Kirill on 8.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Программа сервера
  */
 public class ServerMain {
     public static void main(String[] args) {

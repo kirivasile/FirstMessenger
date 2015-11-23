@@ -16,7 +16,17 @@ import java.util.Map;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
+
+/**
+ * Вывод списка всех чатов.
+ */
 public class ChatListCommand implements Command {
+
+    /**
+     * @param args 0 - название команды
+     * @param session Данные о текущей сессии
+     * @throws Exception
+     */
     @Override
     public void run(String[] args, Session session) throws Exception {
         DataOutputStream writer = session.getWriter();

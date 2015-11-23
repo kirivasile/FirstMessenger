@@ -10,14 +10,43 @@ import java.io.DataOutputStream;
 
 /**
  * Created by Kirill on 18.10.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Хранение данных о текущей сессии с клиентом
  */
 public class Session {
+    /**
+     * Потоки для общения с клиентом
+     */
     private DataInputStream reader;
     private DataOutputStream writer;
+
+    /**
+     * Сервис авторизации и регистрации клиентов
+     */
     private AuthorizationService authorizationService;
+
+    /**
+     * Имя текущего пользователя
+     */
     private String currentUserName;
+
+    /**
+     * @see DataStore
+     */
     private DataStore dataStore;
+
+    /**
+     * Идентификатор текущего пользователя
+     */
     private int currentUserId;
+
+    /**
+     * @see SessionManager
+     */
     private SessionManager sessionManager;
 
     public Session(DataInputStream reader, DataOutputStream writer,

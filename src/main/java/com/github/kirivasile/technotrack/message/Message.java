@@ -9,14 +9,23 @@ import java.io.Serializable;
  * E-mail: kirivasile@yandex.ru
  */
 
+/**
+ * Информация о сообщении
+ */
 public class Message implements Serializable {
-    public enum MessageType {
-        TEXT,
-        COMMAND
-    }
-
+    /**
+     * Идентификатор сообщения
+     */
     protected int id;
+
+    /**
+     * Идентификатор автора
+     */
     protected int authorId;
+
+    /**
+     * Сообщение
+     */
     protected String message;
 
     public Message() {

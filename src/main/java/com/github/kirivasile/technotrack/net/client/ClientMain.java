@@ -11,15 +11,48 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Created by Kirill on 08.11.2015.
+ * Created by Kirill on 17.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Программа клиента
  */
 public class ClientMain {
+    /**
+     * Сокет, через который происходит общение
+     */
     private Socket socket;
+
+    /**
+     * Поток для чтения данных
+     */
     private DataInputStream in;
+
+    /**
+     * Поток для ввода данных
+     */
     private DataOutputStream out;
+
+    /**
+     * Нить, отвечающая за получение сообщений от сервера
+     */
     private Thread listenThread;
+
+    /**
+     * Нить, отвечающая за отправку сообщений на сервер
+     */
     private Thread writeThread;
+
+    /**
+     * Очередь, для обмена сообщений для отправки между главной нитью и writeThread
+     */
     private BlockingQueue<Message> messagesToWrite;
+
+    /**
+     * Классы, отвечающие за работу нитей
+     */
     private MessageListener listener;
     private MessageWriter writer;
 
@@ -44,6 +77,10 @@ public class ClientMain {
         }
     }
 
+    /**
+     * Обработать команду с консоли
+     * @throws Exception
+     */
     public void handleUserCommands() throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String line;
@@ -67,6 +104,9 @@ public class ClientMain {
         }
     }
 
+    /**
+     * Остановить потоки (Ещё работает неточно)
+     */
     public void stopThreads() {
         try {
             //listener.stop();

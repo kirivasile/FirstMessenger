@@ -10,8 +10,20 @@ import java.io.DataOutputStream;
 
 /**
  * Created by Kirill on 18.10.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Смена ника
  */
 public class UserCommand implements Command {
+
+    /**
+     * @param args 0 - название команды, 1 - новый ник
+     * @param session Данные о текущей сессии
+     * @throws Exception
+     */
     @Override
     public void run(String[] args, Session session) throws Exception {
         DataOutputStream writer = session.getWriter();
@@ -19,17 +31,14 @@ public class UserCommand implements Command {
         String message = "";
         AnswerMessage.Value success;
         if (args.length < 2) {
-            //writer.writeUTF("User command: wrong number of arguments\n");
             success = AnswerMessage.Value.NUM_ARGS;
         } else {
             AuthorizationService service = session.getAuthorizationService();
             String newNickName = args[1];
             if (service.changeUserNick(session.getCurrentUserId(), newNickName)) {
-                //writer.writeUTF("Now the nickname of user " + session.getCurrentUserName() + " is " + newNickName);
                 message = "Now the nickname of user " + session.getCurrentUserName() + " is " + newNickName;
                 success = AnswerMessage.Value.SUCCESS;
             } else {
-                //writer.writeUTF("Please login before using this command");
                 success = AnswerMessage.Value.LOGIN;
             }
         }

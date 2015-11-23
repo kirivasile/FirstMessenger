@@ -12,9 +12,24 @@ import java.util.concurrent.BlockingQueue;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
+
+/**
+ * Класс, отправляющий сообщения серверу
+ */
 public class MessageWriter implements Runnable {
+    /**
+     * @see ClientMain#out
+     */
     private DataOutputStream out;
+
+    /**
+     * @see ClientMain#messagesToWrite
+     */
     private BlockingQueue<Message> messagesToWrite;
+
+    /**
+     * Протокол кодирования
+     */
     private Protocol<Message> writeProtocol;
 
     public MessageWriter(DataOutputStream out, BlockingQueue<Message> messagesToWrite) {
@@ -34,9 +49,5 @@ public class MessageWriter implements Runnable {
         } catch (Exception e) {
             System.err.println("MessageWriter: exception caught " + e.toString());
         }
-    }
-
-    public void stop() throws Exception {
-        Thread.currentThread().interrupt();
     }
 }

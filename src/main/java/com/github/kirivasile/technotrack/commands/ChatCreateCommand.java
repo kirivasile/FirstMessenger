@@ -16,7 +16,17 @@ import java.util.List;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
+
+/**
+ * Команда, отвечающая за создание чата: /chat_create
+ */
 public class ChatCreateCommand implements Command {
+
+    /**
+     * @param args 0 - название команды, 1 - список участников чата через запятую
+     * @param session Данные о текущей сессии
+     * @throws Exception
+     */
     @Override
     public void run(String[] args, Session session) throws Exception {
         DataOutputStream writer = session.getWriter();

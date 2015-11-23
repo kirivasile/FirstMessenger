@@ -1,15 +1,22 @@
 package com.github.kirivasile.technotrack.authorization;
 
-import java.io.Serializable;
+/**
+ * Created by Kirill on 16.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
 
 /**
- * Created by Kirill on 29.09.2015.
+ * Класс-информация о пользователе
  */
 public class User {
+    /**
+     * Данные о пользователе
+     */
     private String name;
     private String password;
     private String nickname;
-    private int id; //Will be implemented with database
+    private int id;
 
     public User() {}
 

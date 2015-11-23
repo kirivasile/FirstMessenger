@@ -9,6 +9,10 @@ import java.util.TreeSet;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
+
+/**
+ * Хранение всех активных сессий
+ */
 public class SessionManager {
     private Set<Session> sessions;
 
@@ -28,6 +32,11 @@ public class SessionManager {
         sessions.add(session);
     }
 
+    /**
+     * Выдача сессии по идентфикатору пользователя
+     * @param id Идентификатор пользователя
+     * @return Сессия для этого пользователя
+     */
     public Session getSessionById(int id) {
         for (Session it: sessions) {
             if (it.getCurrentUserId() == id) {

@@ -1,18 +1,20 @@
 package com.github.kirivasile.technotrack.message;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kirivasile.technotrack.jdbc.QueryExecutor;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.*;
 
 /**
- * Created by Kirill on 18.10.2015.
+ * Created by Kirill on 17.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Реализация хранилища сообщений на БД PostegreSQL
  */
 public class DBMessageStore implements MessageStore {
-    //private Map<Integer, Message> messageMap;
     private Connection connection;
     private int chatId;
     private QueryExecutor executor;
@@ -23,6 +25,9 @@ public class DBMessageStore implements MessageStore {
         this.executor = new QueryExecutor();
     }
 
+    /**
+     * @see MessageStore#addMessage(int, String, String, Chat)
+     */
     @Override
     public synchronized void addMessage(int authorId, String authorName, String value, Chat chat) throws Exception {
         try {
@@ -40,6 +45,9 @@ public class DBMessageStore implements MessageStore {
         }
     }
 
+    /**
+     * @see MessageStore#getMessagesMap()
+     */
     @Override
     public synchronized Map<Integer, Message> getMessagesMap() throws Exception {
         Map<Integer, Message> messageMap = new HashMap<>();
@@ -62,6 +70,9 @@ public class DBMessageStore implements MessageStore {
         return messageMap;
     }
 
+    /**
+     * @see MessageStore#getMessageByRegex(String)
+     */
     @Override
     public List<Message> getMessageByRegex(String regex) throws Exception{
         List<Message> messages = new ArrayList<>();

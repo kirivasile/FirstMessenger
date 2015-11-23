@@ -11,8 +11,31 @@ import java.util.Map;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
+
+/**
+ * Интерфейс хранилища чатов
+ */
 public interface ChatStore {
+    /**
+     * Создать чат
+     * @param participants Список участников
+     * @return Идентификатор чата
+     * @throws Exception
+     */
     int createChat(List<Integer> participants) throws Exception;
+
+    /**
+     * Выдать список чатов(Не больше 10000)
+     * @return Список чатов
+     * @throws Exception
+     */
     Map<Integer, Chat> getChatList() throws Exception;
+
+    /**
+     * Выдать определённый чат по идентификатору
+     * @param id Идентификатор чата
+     * @return Класс-информация о чате
+     * @throws Exception
+     */
     Chat getChat(Integer id) throws Exception;
 }

@@ -12,6 +12,10 @@ import java.util.*;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
+
+/**
+ * Реализация хранилища чатов в БД PostegreSql
+ */
 public class DBChatStore implements ChatStore {
     private Connection connection;
     private QueryExecutor executor;
@@ -21,23 +25,11 @@ public class DBChatStore implements ChatStore {
         this.executor = new QueryExecutor();
     }
 
+    /**
+     * @see ChatStore#createChat(List)
+     */
     @Override
     public synchronized int createChat(List<Integer> participants) throws Exception {
-        /*int chatId = -1;
-        try {
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate("INSERT INTO chats (temp) VALUES (\'temp\')", Statement.RETURN_GENERATED_KEYS);
-            ResultSet rs = stmt.getGeneratedKeys();
-            while (rs.next()) {
-                chatId = rs.getInt(1);
-            }
-            for (Integer userId : participants) {
-                String sql = String.format("INSERT INTO userschat (user_id, chat_id) VALUES (%d, %d)",userId, chatId);
-                stmt.executeUpdate(sql);
-            }
-        } catch (Exception e) {
-            System.err.println("ChatStore: failed to write data " + e.getMessage());
-        }*/
         int chatId = -1;
         String sql = "INSERT INTO chats (temp) VALUES (?)";
         Map<Integer, Object> queryArgs = new HashMap<>();
@@ -58,6 +50,9 @@ public class DBChatStore implements ChatStore {
         return chatId;
     }
 
+    /**
+     * @see ChatStore#getChatList()
+     */
     @Override
     public Map<Integer, Chat> getChatList() throws Exception {
         String sql = "SELECT * FROM userschat LIMIT 10000";
@@ -79,6 +74,9 @@ public class DBChatStore implements ChatStore {
         });
     }
 
+    /**
+     * @see ChatStore#getChat(Integer)
+     */
     @Override
     public Chat getChat(Integer id) throws Exception {
         Chat result = new Chat(id, connection);

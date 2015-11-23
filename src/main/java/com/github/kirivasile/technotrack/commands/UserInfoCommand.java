@@ -10,9 +10,21 @@ import com.github.kirivasile.technotrack.session.Session;
 import java.io.DataOutputStream;
 
 /**
- * Created by Kirill on 09.11.2015.
+ * Created by Kirill on 16.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Информация о пользователе: /user_info
  */
 public class UserInfoCommand implements Command {
+    /**
+     * @param args 0 - название команды, 1 - имя пользователя. Если аргумент 1 отсутствует, то выводятся
+     *             данные о текущем пользователе
+     * @param session Данные о текущей сессии
+     * @throws Exception
+     */
     @Override
     public void run(String[] args, Session session) throws Exception {
         DataOutputStream writer = session.getWriter();

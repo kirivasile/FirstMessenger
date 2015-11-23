@@ -9,9 +9,20 @@ import com.github.kirivasile.technotrack.session.Session;
 import java.io.DataOutputStream;
 
 /**
- * Created by Kirill on 08.11.2015.
+ * Created by Kirill on 16.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Регистрация пользователя: /register
  */
 public class RegisterCommand implements Command {
+    /**
+     * @param args 0 - название команды, 1 - логин, 2 - пароль
+     * @param session Данные о текущей сессии
+     * @throws Exception
+     */
     @Override
     public void run(String[] args, Session session) throws Exception {
         Protocol<AnswerMessage> protocol = new SerializationProtocol<>();
@@ -21,7 +32,6 @@ public class RegisterCommand implements Command {
             service.registerUser(args[1], args[2], session);
         } else {
             DataOutputStream writer = session.getWriter();
-            //writer.writeUTF("Wrong number of arguments");
             success = AnswerMessage.Value.NUM_ARGS;
             writer.write(protocol.encode(new AnswerMessage("", success)));
         }

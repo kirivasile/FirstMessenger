@@ -9,7 +9,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Kirill on 09.11.2015.
+ * Created by Kirill on 17.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Объединение всех хранилищ
  */
 public class DataStore {
     private UserStore userStore;

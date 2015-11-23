@@ -10,6 +10,10 @@ import java.sql.Statement;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
+
+/**
+ * Организация базы данных перед запуском(Создание таблиц).
+ */
 public class DBOrganizer {
     public static void reorganizeDB(String[] args) throws Exception {
         Class.forName("org.postgresql.Driver");

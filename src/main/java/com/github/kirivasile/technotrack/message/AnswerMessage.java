@@ -7,7 +7,14 @@ import java.io.Serializable;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
+
+/**
+ * Ответ сервера на запрос клиента
+ */
 public class AnswerMessage implements Serializable {
+    /**
+     * Тип ответа
+     */
     public enum Value {
         SUCCESS,
         ERROR,
@@ -16,6 +23,9 @@ public class AnswerMessage implements Serializable {
         CHAT,
     }
 
+    /**
+     * Данные об ответе
+     */
     private int id;
     private String from;
     private String message;

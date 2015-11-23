@@ -12,8 +12,18 @@ import java.util.Map;
  * E-mail: kirivasile@yandex.ru
  */
 
+/**
+ * Класс для отправки запросов в БД
+ */
 public class QueryExecutor {
-    //Usual statement
+    /**
+     * Выполнить обычный запрос в БД
+     * @param connection Соединение с БД
+     * @param query SQL-запрос в текстовом виде
+     * @param handler Обработчик результата
+     * @return Результат
+     * @throws SQLException
+     */
     public <T> T execQuery(Connection connection, String query, ResultHandler<T> handler) throws SQLException {
         Statement stmt = connection.createStatement();
         stmt.execute(query);
@@ -25,7 +35,15 @@ public class QueryExecutor {
         return value;
     }
 
-    //PreparedStatement
+    /**
+     * Выполнить preparedStatement-запрос в БД
+     * @param connection Соединение с БД
+     * @param query SQL-запрос в текстовом виде
+     * @param args Аргументы для preparedStatement
+     * @param handler Обработчик результата
+     * @return Результат
+     * @throws SQLException
+     */
     public <T> T execQuery(Connection connection, String query, Map<Integer, Object> args, ResultHandler<T> handler) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(query);
         for (Map.Entry<Integer, Object> entry : args.entrySet()) {
@@ -38,7 +56,13 @@ public class QueryExecutor {
         return value;
     }
 
-    //PreparedStatement for update
+    /**
+     * Выполнить preparedStatement-обновление БД без ответа
+     * @param connection Соединение с БД
+     * @param query SQL-запрос в текстовом виде
+     * @param args Аргументы для preparedStatement
+     * @throws SQLException
+     */
     public void execUpdate(Connection connection, String query, Map<Integer, Object> args) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(query);
         for (Map.Entry<Integer, Object> entry : args.entrySet()) {
@@ -48,7 +72,15 @@ public class QueryExecutor {
         stmt.close();
     }
 
-    //PreparedStatement for update with result
+    /**
+     * Выполнить preparedStatement-обновление БД с возвратом сгенерированных ключей
+     * @param connection Соединение с БД
+     * @param query SQL-запрос в текстовом виде
+     * @param args Аргументы для preparedStatement
+     * @param handler Обработчик результата
+     * @return Идентификаторы вставленных данных
+     * @throws SQLException
+     */
     public <T> T execUpdate(Connection connection, String query, Map<Integer, Object> args, ResultHandler<T> handler) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
         for (Map.Entry<Integer, Object> entry : args.entrySet()) {

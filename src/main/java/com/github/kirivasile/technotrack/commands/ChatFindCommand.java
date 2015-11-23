@@ -9,9 +9,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Kirill on 18.10.2015.
+ * Created by Kirill on 16.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Команда, отвечающая за поиск сообщения в чате, соответствующих данному регулярному выражению
  */
 public class ChatFindCommand implements Command {
+    /**
+     * @param args 0 - название команды, 1 - идентификатор чата, 2,3,4... - регулярное выражение
+     * @param session Данные о текущей сессии
+     * @throws Exception
+     */
     @Override
     public void run(String[] args, Session session) throws Exception {
         DataOutputStream writer = session.getWriter();
@@ -42,14 +53,6 @@ public class ChatFindCommand implements Command {
             }
             String regex = regexBuilder.toString();
             StringBuilder stringBuilder = new StringBuilder();
-            /*Map<Integer, Message> messageMap = chat.getMessageMap();
-            for (Map.Entry<Integer, Message> pair : messageMap.entrySet()) {
-                String messageValue = pair.getValue().getMessage();
-                if (messageValue.matches(regex)) {
-                    stringBuilder.append(pair.getValue().toString());
-                    stringBuilder.append("\n");
-                }
-            }*/
             MessageStore messageStore = chat.getMessageStore();
             List<Message> messages = messageStore.getMessageByRegex(regex);
             for (Message it : messages) {

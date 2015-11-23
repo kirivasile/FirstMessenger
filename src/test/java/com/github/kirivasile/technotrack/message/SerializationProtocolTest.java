@@ -10,6 +10,10 @@ import static org.junit.Assert.*;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
+
+/**
+ * Тестирование протокола сериализации
+ */
 public class SerializationProtocolTest {
     private static Message message;
     private static SerializationProtocol<Message> protocol;

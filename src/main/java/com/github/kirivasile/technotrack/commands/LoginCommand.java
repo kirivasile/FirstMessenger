@@ -9,9 +9,20 @@ import com.github.kirivasile.technotrack.session.Session;
 import java.io.DataOutputStream;
 
 /**
- * Created by Kirill on 13.10.2015.
+ * Created by Kirill on 16.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Авторизация пользователя: /login
  */
 public class LoginCommand implements Command {
+    /**
+     * @param args 0 - название команды, 1 - логин, 2 - пароль
+     * @param session Данные о текущей сессии
+     * @throws Exception
+     */
     @Override
     public void run(String[] args, Session session) throws Exception {
         DataOutputStream writer = session.getWriter();

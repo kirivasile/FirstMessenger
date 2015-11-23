@@ -13,8 +13,19 @@ import java.util.concurrent.BlockingQueue;
  * GitHub profile: http://github.com/kirivasile
  * E-mail: kirivasile@yandex.ru
  */
+
+/**
+ * Класс, получающий сообщения от сервера
+ */
 public class MessageListener implements Runnable {
+    /**
+     * @see ClientMain#in
+     */
     private DataInputStream reader;
+
+    /**
+     * Протокол кодирования
+     */
     private Protocol<AnswerMessage> readProtocol;
 
     public MessageListener(DataInputStream reader) {
@@ -38,6 +49,11 @@ public class MessageListener implements Runnable {
         }
     }
 
+    /**
+     * Обработать ответ сервера
+     * @param answer Ответ сервера
+     * @throws Exception
+     */
     public void handleAnswer(AnswerMessage answer) throws Exception {
         AnswerMessage.Value type = answer.getResult();
         String message = answer.getMessage();
@@ -60,9 +76,5 @@ public class MessageListener implements Runnable {
                 System.out.println(String.format("%d: %s", id, message));
                 break;
         }
-    }
-
-    public void stop() throws Exception {
-        Thread.currentThread().interrupt();
     }
 }

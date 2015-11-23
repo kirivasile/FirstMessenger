@@ -17,15 +17,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Kirill on 08.11.2015.
+ * Created by Kirill on 17.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Многопоточный сервер
  */
 public class MultiThreadServer implements Runnable, AutoCloseable {
+    /**
+     * Порт, на котором работает сервер
+     */
     private int serverPort;
+
+    /**
+     * Сокет сервера
+     */
     private ServerSocket serverSocket;
+
+    /**
+     * Проверка на то, остановлен ли сервер
+     */
     private boolean isStopped;
+
+    /**
+     * Нити, для работы с отдельным клиентом
+     */
     private List<Thread> clientThreads;
+
+    /**
+     * Объединение всех хранилищ, требуемых для работы с БД
+     */
     private DataStore dataStore;
+
+    /**
+     * Все сессии клиентов
+     */
     private SessionManager sessionManager;
+
+    /**
+     * Соединение с БД
+     */
     private Connection connection;
 
     public MultiThreadServer(int serverPort) {

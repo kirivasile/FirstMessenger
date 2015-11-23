@@ -10,12 +10,29 @@ import java.io.*;
 import java.util.Map;
 
 /**
- * Created by Kirill on 13.10.2015.
+ * Created by Kirill on 17.11.2015.
+ * GitHub profile: http://github.com/kirivasile
+ * E-mail: kirivasile@yandex.ru
+ */
+
+/**
+ * Обработчик команд, поступающих от определённого клиента
  */
 public class CommandHandler implements Runnable{
+    /**
+     * Потоки для общения с клиентом
+     */
     private DataInputStream reader;
     private DataOutputStream writer;
+
+    /**
+     * Список всех баз данных, требуемых для работы
+     */
     private DataStore dataStore;
+
+    /**
+     * Список сессий.
+     */
     private SessionManager sessionManager;
 
     public CommandHandler(InputStream reader, OutputStream writer, DataStore dataStore, SessionManager sessionManager) {
