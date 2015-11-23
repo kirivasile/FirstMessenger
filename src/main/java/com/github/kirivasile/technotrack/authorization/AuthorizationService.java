@@ -7,6 +7,7 @@ import com.github.kirivasile.technotrack.message.SerializationProtocol;
 import com.github.kirivasile.technotrack.session.Session;
 
 import java.io.*;
+import java.util.List;
 
 /**
  * Created by Kirill on 29.09.2015.
@@ -27,8 +28,8 @@ public class AuthorizationService {
         String message = "";
         AnswerMessage.Value success;
         if (name != null && password != null) {
-            User currentUser = userStore.getUserByName(name);
-            if (currentUser != null) {
+            List<User> userByName = userStore.getUserByName(name);
+            if (userByName.size() > 0) {
                 //writer.writeUTF("Sorry, but user with this name has already registered");
                 message = "Sorry, but user with this name has already registered";
                 success = AnswerMessage.Value.ERROR;
@@ -54,8 +55,9 @@ public class AuthorizationService {
         Protocol<AnswerMessage> protocol = new SerializationProtocol<>();
         String message = "";
         AnswerMessage.Value success;
-        User user = userStore.getUserByName(name);
-        if (user != null) {
+        List<User> userByName = userStore.getUserByName(name);
+        if (userByName.size() == 1) {
+            User user = userByName.get(0);
             if (user.getPassword().equals(Integer.toString(password.hashCode()))) {
                 session.setCurrentUserName(name);
                 session.setCurrentUserId(user.getId());
@@ -75,8 +77,8 @@ public class AuthorizationService {
         writer.write(protocol.encode(new AnswerMessage(message, success)));
     }
 
-    public boolean changeUserNick(String name, String newNickName) {
-        User user = userStore.getUserByName(name);
+    public boolean changeUserNick(int id, String newNickName) throws Exception {
+        User user = userStore.getUser(id);
         if (user == null) {
             return false;
         }
@@ -84,8 +86,8 @@ public class AuthorizationService {
         return true;
     }
 
-    public int changePassword(String name, String oldPassword, String newPassword) {
-        User user = userStore.getUserByName(name);
+    public int changePassword(int id, String oldPassword, String newPassword) throws Exception {
+        User user = userStore.getUser(id);
         if (user == null) {
             return -1;
         }
@@ -99,7 +101,7 @@ public class AuthorizationService {
         }
     }
 
-    public User getUserInfo(String name) {
-        return userStore.getUserByName(name);
+    public User getUserInfo(int id) throws Exception  {
+        return userStore.getUser(id);
     }
 }

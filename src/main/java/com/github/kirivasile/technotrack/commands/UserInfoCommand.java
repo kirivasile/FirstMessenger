@@ -20,13 +20,13 @@ public class UserInfoCommand implements Command {
         String message = "";
         AnswerMessage.Value success;
         if (args.length == 1) {
-            String currentUserName = session.getCurrentUserName();
-            if (currentUserName == null) {
+            int currentUserId = session.getCurrentUserId();
+            if (currentUserId == -1) {
                 //writer.writeUTF("Please login before using this command");
                 success = AnswerMessage.Value.NUM_ARGS;
             } else {
                 AuthorizationService service = session.getAuthorizationService();
-                User user = service.getUserInfo(currentUserName);
+                User user = service.getUserInfo(currentUserId);
                 if (user == null) {
                     //writer.writeUTF("Can't find you. Don't worry.");
                     message = "Can't find you. Don't worry.";
@@ -40,7 +40,7 @@ public class UserInfoCommand implements Command {
             }
         } else if (args.length == 2) {
             AuthorizationService service = session.getAuthorizationService();
-            User user = service.getUserInfo(args[1]);
+            User user = service.getUserInfo(Integer.parseInt(args[1]));
             if (user == null) {
                 //writer.writeUTF("Can't find user: " + args[1]);
                 message = "Can't find user: " + args[1];

@@ -14,7 +14,6 @@ import java.util.Map;
 
 public class QueryExecutor {
 
-    // Простой запрос
     public <T> T execQuery(Connection connection, String query, ResultHandler<T> handler) throws SQLException {
         Statement stmt = connection.createStatement();
         stmt.execute(query);
@@ -26,13 +25,25 @@ public class QueryExecutor {
         return value;
     }
 
-    // Подготовленный запрос
     public <T> T execQuery(Connection connection, String query, Map<Integer, Object> args, ResultHandler<T> handler) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(query);
         for (Map.Entry<Integer, Object> entry : args.entrySet()) {
             stmt.setObject(entry.getKey(), entry.getValue());
         }
         ResultSet rs = stmt.executeQuery();
+        T value = handler.handle(rs);
+        rs.close();
+        stmt.close();
+        return value;
+    }
+
+    public <T> T execUpdate(Connection connection, String query, Map<Integer, Object> args, ResultHandler<T> handler) throws SQLException {
+        PreparedStatement stmt = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+        for (Map.Entry<Integer, Object> entry : args.entrySet()) {
+            stmt.setObject(entry.getKey(), entry.getValue());
+        }
+        stmt.executeUpdate();
+        ResultSet rs = stmt.getGeneratedKeys();
         T value = handler.handle(rs);
         rs.close();
         stmt.close();

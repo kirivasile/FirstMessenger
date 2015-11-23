@@ -19,15 +19,15 @@ public class ChangePasswordCommand implements Command {
         String message = "";
         AnswerMessage.Value success;
         if (args.length == 3) {
-            String currentUserName = session.getCurrentUserName();
-            if (currentUserName == null) {
+            int currentUserId = session.getCurrentUserId();
+            if (currentUserId == -1) {
                 //writer.writeUTF("Please login before using this command");
                 success = AnswerMessage.Value.LOGIN;
             } else {
                 String oldPassword = args[1];
                 String newPassword = args[2];
                 AuthorizationService service = session.getAuthorizationService();
-                int result = service.changePassword(currentUserName, oldPassword, newPassword);
+                int result = service.changePassword(currentUserId, oldPassword, newPassword);
                 if (result == 1) {
                     //writer.writeUTF("Old password isn't correct");
                     message = "Old password isn't correct";

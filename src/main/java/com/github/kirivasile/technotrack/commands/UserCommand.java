@@ -24,7 +24,7 @@ public class UserCommand implements Command {
         } else {
             AuthorizationService service = session.getAuthorizationService();
             String newNickName = args[1];
-            if (service.changeUserNick(session.getCurrentUserName(), newNickName)) {
+            if (service.changeUserNick(session.getCurrentUserId(), newNickName)) {
                 //writer.writeUTF("Now the nickname of user " + session.getCurrentUserName() + " is " + newNickName);
                 message = "Now the nickname of user " + session.getCurrentUserName() + " is " + newNickName;
                 success = AnswerMessage.Value.SUCCESS;
