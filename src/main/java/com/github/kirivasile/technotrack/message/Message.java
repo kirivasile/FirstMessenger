@@ -18,7 +18,6 @@ public class Message implements Serializable {
     protected int id;
     protected int authorId;
     protected String message;
-    protected MessageType type;
 
     public Message() {
 
@@ -38,14 +37,6 @@ public class Message implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public MessageType getType() {
-        return type;
-    }
-
-    public void setType(MessageType type) {
-        this.type = type;
     }
 
     public int getAuthorId() {

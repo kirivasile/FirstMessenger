@@ -22,37 +22,31 @@ public class UserInfoCommand implements Command {
         if (args.length == 1) {
             int currentUserId = session.getCurrentUserId();
             if (currentUserId == -1) {
-                //writer.writeUTF("Please login before using this command");
                 success = AnswerMessage.Value.NUM_ARGS;
             } else {
                 AuthorizationService service = session.getAuthorizationService();
                 User user = service.getUserInfo(currentUserId);
                 if (user == null) {
-                    //writer.writeUTF("Can't find you. Don't worry.");
                     message = "Can't find you. Don't worry.";
                     success = AnswerMessage.Value.ERROR;
                 } else {
                     message = String.format("Username: %s," +
                                                 " nickname: %s, Id: %d", user.getName(), user.getNick(), user.getId());
                     success = AnswerMessage.Value.SUCCESS;
-                    //writer.writeUTF(data);
                 }
             }
         } else if (args.length == 2) {
             AuthorizationService service = session.getAuthorizationService();
             User user = service.getUserInfo(Integer.parseInt(args[1]));
             if (user == null) {
-                //writer.writeUTF("Can't find user: " + args[1]);
                 message = "Can't find user: " + args[1];
                 success = AnswerMessage.Value.ERROR;
             } else {
                 message = String.format("Username: %s," +
                         " nickname: %s, Id: %d", user.getName(), user.getNick(), user.getId());
-                //writer.writeUTF(data);
                 success = AnswerMessage.Value.SUCCESS;
             }
         } else {
-            //writer.writeUTF("Wrong number of arguments");
             success = AnswerMessage.Value.NUM_ARGS;
         }
         writer.write(protocol.encode(new AnswerMessage(message, success)));
