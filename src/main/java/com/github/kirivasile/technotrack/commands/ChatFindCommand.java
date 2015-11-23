@@ -16,34 +16,42 @@ public class ChatFindCommand implements Command {
         Protocol<AnswerMessage> protocol = new SerializationProtocol<>();
         String message = "";
         AnswerMessage.Value success;
-        if (args.length != 2) {
-            success = AnswerMessage.Value.NUM_ARGS;
-        } else {
-            if (session.getCurrentUserName() == null) {
-                success = AnswerMessage.Value.LOGIN;
-            } else {
-                int chatId = Integer.parseInt(args[1]);
-                ChatStore chatStore = session.getDataStore().getChatStore();
-                Chat chat = chatStore.getChat(chatId);
-                if (chat == null) {
-                    message = "Chat not found";
-                    success = AnswerMessage.Value.ERROR;
-                    writer.write(protocol.encode(new AnswerMessage(message, success)));
-                    return;
-                }
-                StringBuilder messageBuilder = new StringBuilder();
-                Map<Integer, Message> messageMap = chat.getMessageMap();
-                for (Map.Entry<Integer, Message> pair : messageMap.entrySet()) {
-                    if (pair.getValue().getAuthorId() == session.getCurrentUserId()) {
-                        String msg = pair.getValue().getMessage();
-                        if (msg.matches(args[1])) {
-                            messageBuilder.append(String.format("Message: \"%s\"\n", msg));
-                        }
-                    }
-                }
-                message = messageBuilder.toString();
-                success = AnswerMessage.Value.SUCCESS;
+        if (session.getCurrentUserName() == null) {
+            success = AnswerMessage.Value.LOGIN;
+            writer.write(protocol.encode(new AnswerMessage(message, success)));
+            return;
+        }
+        if (args.length >= 3) {
+            int chatId = Integer.parseInt(args[1]);
+            ChatStore chatStore = session.getDataStore().getChatStore();
+            Chat chat = chatStore.getChat(chatId);
+            if (chat == null) {
+                message = "Chat not found";
+                success = AnswerMessage.Value.ERROR;
+                writer.write(protocol.encode(new AnswerMessage(message, success)));
+                return;
             }
+            StringBuilder regexBuilder = new StringBuilder();
+            for (int i = 2; i < args.length; ++i) {
+                regexBuilder.append(args[i]);
+                if (i != args.length - 1) {
+                    regexBuilder.append(' ');
+                }
+            }
+            String regex = regexBuilder.toString();
+            StringBuilder stringBuilder = new StringBuilder();
+            Map<Integer, Message> messageMap = chat.getMessageMap();
+            for (Map.Entry<Integer, Message> pair : messageMap.entrySet()) {
+                String messageValue = pair.getValue().getMessage();
+                if (messageValue.matches(regex)) {
+                    stringBuilder.append(pair.getValue().toString());
+                    stringBuilder.append("\n");
+                }
+            }
+            message = stringBuilder.toString();
+            success = AnswerMessage.Value.SUCCESS;
+        } else {
+            success = AnswerMessage.Value.NUM_ARGS;
         }
         writer.write(protocol.encode(new AnswerMessage(message, success)));
     }
