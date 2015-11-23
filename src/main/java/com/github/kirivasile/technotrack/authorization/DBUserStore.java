@@ -4,6 +4,7 @@ import com.github.kirivasile.technotrack.jdbc.QueryExecutor;
 
 import java.io.*;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class DBUserStore implements AutoCloseable, UserStore {
     /*To reduce the number of writings, I've created a local cache of users, which would be used for reading*/
     private Map<Integer, User> users;
     private Connection connection;
+    private PreparedStatement insertStatement;
 
     public DBUserStore(Connection conn) {
         try {
@@ -37,6 +39,9 @@ public class DBUserStore implements AutoCloseable, UserStore {
             for (User it : userList) {
                 users.put(it.getId(), it);
             }
+
+            String insertSql = "INSERT INTO USERS (LOGIN, PASSWORD, NICK) VALUES (?, ?, ? )";
+            insertStatement = conn.prepareStatement(insertSql, PreparedStatement.RETURN_GENERATED_KEYS);
         } catch (Exception e) {
             System.err.println("UserStore: failed to open database " + e.getMessage());
         }
@@ -54,6 +59,7 @@ public class DBUserStore implements AutoCloseable, UserStore {
         return null;
     }
 
+    @Override
     public synchronized User getUser(int id) {
         if (id < 0) {
             return null;
@@ -61,18 +67,22 @@ public class DBUserStore implements AutoCloseable, UserStore {
         return users.get(id);
     }
 
-    public synchronized int addUser(User user) {
+    @Override
+    public synchronized int addUser(User user) throws Exception{
         if (user == null) {
             System.out.println("Can't add user");
             return -1;
         }
         int result = -1;
         try {
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(String.format("INSERT INTO USERS (LOGIN, PASSWORD, NICK) " +
+            /*stmt.executeUpdate(String.format("INSERT INTO USERS (LOGIN, PASSWORD, NICK) " +
                             "VALUES (\'%s\', \'%s\', \'%s\' )", user.getName(),
-                    Integer.toString(user.getPassword().hashCode()), user.getName()), Statement.RETURN_GENERATED_KEYS);
-            ResultSet rs = stmt.getGeneratedKeys();
+                    Integer.toString(user.getPassword().hashCode()), user.getName()), Statement.RETURN_GENERATED_KEYS);*/
+            insertStatement.setString(1, user.getName());
+            insertStatement.setString(2, Integer.toString(user.getPassword().hashCode()));
+            insertStatement.setString(3, user.getName());
+            insertStatement.executeUpdate();
+            ResultSet rs = insertStatement.getGeneratedKeys();
             while (rs.next()) {
                 result = rs.getInt(1);
             }
@@ -82,6 +92,7 @@ public class DBUserStore implements AutoCloseable, UserStore {
             users.put(result, input);
         } catch (Exception e) {
             System.err.println("UserStore: failed to write data " + e.getMessage());
+            throw new Exception("Failed to add user");
         }
         return result;
     }

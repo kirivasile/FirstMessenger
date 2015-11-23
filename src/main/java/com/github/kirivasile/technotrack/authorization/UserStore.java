@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserStore {
     User getUser(int id);
     User getUserByName(String name);
-    int addUser(User user);
+    int addUser(User user) throws Exception;
     List<User> getUserList();
     void close() throws Exception;
 }

@@ -1,6 +1,7 @@
 package com.github.kirivasile.technotrack.net.server;
 
 import com.github.kirivasile.technotrack.authorization.DBUserStore;
+import com.github.kirivasile.technotrack.jdbc.DBOrganizer;
 import com.github.kirivasile.technotrack.message.DBChatStore;
 import com.github.kirivasile.technotrack.session.SessionManager;
 
@@ -32,6 +33,7 @@ public class MultiThreadServer implements Runnable, AutoCloseable {
             this.serverPort = serverPort;
             isStopped = false;
             clientThreads = new ArrayList<>();
+            DBOrganizer.reorganizeDB(null);
             connection = DriverManager.getConnection("jdbc:postgresql://178.62.140.149:5432/kirivasile",
                     "senthil", "ubuntu");
             dataStore = new DataStore(new DBUserStore(connection), new DBChatStore(connection), connection);
