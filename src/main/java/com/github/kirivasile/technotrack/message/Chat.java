@@ -18,9 +18,9 @@ public class Chat {
 
     public Chat(Integer id, Connection conn) {
         this.id = id;
-        participantIds = new ArrayList<>();
+        this.participantIds = new ArrayList<>();
         this.connection = conn;
-        messageStore = new DBMessageStore(connection, this);
+        this.messageStore = new DBMessageStore(connection, this);
     }
 
     public Chat(List<Integer> participantIds, Integer id, Connection conn) {
@@ -54,12 +54,16 @@ public class Chat {
         return true;
     }
 
-    public void addMessage(int authorId, String authorName, String message) {
+    public void addMessage(int authorId, String authorName, String message) throws Exception {
         messageStore.addMessage(authorId, authorName, message, this);
     }
 
-    public Map<Integer, Message> getMessageMap() {
+    public Map<Integer, Message> getMessageMap() throws Exception {
         return messageStore.getMessagesMap();
+    }
+
+    public MessageStore getMessageStore() {
+        return messageStore;
     }
 
     public void close() throws Exception {

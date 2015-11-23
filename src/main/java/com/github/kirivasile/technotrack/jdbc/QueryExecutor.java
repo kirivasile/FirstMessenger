@@ -13,7 +13,7 @@ import java.util.Map;
  */
 
 public class QueryExecutor {
-
+    //Usual statement
     public <T> T execQuery(Connection connection, String query, ResultHandler<T> handler) throws SQLException {
         Statement stmt = connection.createStatement();
         stmt.execute(query);
@@ -25,6 +25,7 @@ public class QueryExecutor {
         return value;
     }
 
+    //PreparedStatement
     public <T> T execQuery(Connection connection, String query, Map<Integer, Object> args, ResultHandler<T> handler) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(query);
         for (Map.Entry<Integer, Object> entry : args.entrySet()) {
@@ -37,6 +38,17 @@ public class QueryExecutor {
         return value;
     }
 
+    //PreparedStatement for update
+    public void execUpdate(Connection connection, String query, Map<Integer, Object> args) throws SQLException {
+        PreparedStatement stmt = connection.prepareStatement(query);
+        for (Map.Entry<Integer, Object> entry : args.entrySet()) {
+            stmt.setObject(entry.getKey(), entry.getValue());
+        }
+        stmt.executeUpdate();
+        stmt.close();
+    }
+
+    //PreparedStatement for update with result
     public <T> T execUpdate(Connection connection, String query, Map<Integer, Object> args, ResultHandler<T> handler) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
         for (Map.Entry<Integer, Object> entry : args.entrySet()) {

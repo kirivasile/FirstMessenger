@@ -21,9 +21,8 @@ public class DBUserStore implements AutoCloseable, UserStore {
     private QueryExecutor executor;
 
     public DBUserStore(Connection conn) {
-        try {
-            this.connection = conn;
-            executor = new QueryExecutor();
+        this.connection = conn;
+        this.executor = new QueryExecutor();
             /*users = new HashMap<>();
             List<User> userList = executor.execQuery(connection, "SELECT * FROM USERS", (r) -> {
                 List<User> data = new ArrayList<>();
@@ -38,12 +37,6 @@ public class DBUserStore implements AutoCloseable, UserStore {
             for (User it : userList) {
                 users.put(it.getId(), it);
             }*/
-
-            String insertSql = "INSERT INTO USERS (LOGIN, PASSWORD, NICK) VALUES (?, ?, ? )";
-            insertStatement = conn.prepareStatement(insertSql, PreparedStatement.RETURN_GENERATED_KEYS);
-        } catch (Exception e) {
-            System.err.println("UserStore: failed to open database " + e.getMessage());
-        }
     }
 
     @Override
@@ -134,12 +127,9 @@ public class DBUserStore implements AutoCloseable, UserStore {
         }
         return result;*/
         Map<Integer, Object> queryArgs = new HashMap<>();
-        return executor.execQuery(connection, "SELECT * FROM USERS", queryArgs, (r) -> {
+        return executor.execQuery(connection, "SELECT * FROM USERS LIMIT 10000", queryArgs, (r) -> {
             List<User> data = new ArrayList<User>();
             while (r.next()) {
-                if (data.size() >= 1000) {
-                    break;
-                }
                 User u = new User(r.getString("login"), r.getString("password"), r.getString("nick"));
                 int id = r.getInt("id");
                 u.setId(id);

@@ -4,6 +4,8 @@ import com.github.kirivasile.technotrack.message.*;
 import com.github.kirivasile.technotrack.session.Session;
 
 import java.io.DataOutputStream;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,13 +42,20 @@ public class ChatFindCommand implements Command {
             }
             String regex = regexBuilder.toString();
             StringBuilder stringBuilder = new StringBuilder();
-            Map<Integer, Message> messageMap = chat.getMessageMap();
+            /*Map<Integer, Message> messageMap = chat.getMessageMap();
             for (Map.Entry<Integer, Message> pair : messageMap.entrySet()) {
                 String messageValue = pair.getValue().getMessage();
                 if (messageValue.matches(regex)) {
                     stringBuilder.append(pair.getValue().toString());
                     stringBuilder.append("\n");
                 }
+            }*/
+            message = stringBuilder.toString();
+            MessageStore messageStore = chat.getMessageStore();
+            List<Message> messages = messageStore.getMessageByRegex(regex);
+            for (Message it : messages) {
+                stringBuilder.append(it.toString());
+                stringBuilder.append("\n");
             }
             message = stringBuilder.toString();
             success = AnswerMessage.Value.SUCCESS;
