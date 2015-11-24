@@ -19,7 +19,14 @@ import java.util.Map;
  * Класс для отправки запросов в БД
  */
 public class QueryExecutor {
+    /**
+     * Словарь подготовленных запросов
+     */
     private Map<String, PreparedStatement> preparedStatementMap;
+
+    /**
+     * Словарь подготовленных запросов, с Generated Keys
+     */
     private Map<String, PreparedStatement> preparedStatementMapGK;
 
     public QueryExecutor() {
@@ -27,12 +34,24 @@ public class QueryExecutor {
         preparedStatementMapGK = new HashMap<>();
     }
 
+    /**
+     * Подготовить preparedStatement
+     * @param connection Соединение с БД
+     * @param query SQL-запрос
+     * @throws SQLException
+     */
     public void prepareStatement(Connection connection, String query) throws SQLException {
         if (preparedStatementMap.get(query) == null) {
             preparedStatementMap.put(query, connection.prepareStatement(query));
         }
     }
 
+    /**
+     * Подготовить preparedStatement с GeneratedKeys
+     * @param connection Соединение с БД
+     * @param query SQL-запрос
+     * @throws SQLException
+     */
     public void prepareStatementGeneratedKeys(Connection connection, String query) throws SQLException {
         if (preparedStatementMapGK.get(query) == null) {
             preparedStatementMapGK.put(query, connection.prepareStatement(query,
