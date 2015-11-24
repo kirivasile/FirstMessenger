@@ -2,6 +2,7 @@ package com.github.kirivasile.technotrack.message;
 
 import com.github.kirivasile.technotrack.message.Chat;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -38,4 +39,10 @@ public interface ChatStore {
      * @throws Exception
      */
     Chat getChat(Integer id) throws Exception;
+
+    /**
+     * Закрыть открытые ресурсы
+     * @throws SQLException
+     */
+    void close() throws SQLException;
 }

@@ -1,9 +1,12 @@
 package com.github.kirivasile.technotrack.jdbc;
+import oracle.jdbc.proxy.annotation.Pre;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,6 +19,27 @@ import java.util.Map;
  * Класс для отправки запросов в БД
  */
 public class QueryExecutor {
+    private Map<String, PreparedStatement> preparedStatementMap;
+    private Map<String, PreparedStatement> preparedStatementMapGK;
+
+    public QueryExecutor() {
+        preparedStatementMap = new HashMap<>();
+        preparedStatementMapGK = new HashMap<>();
+    }
+
+    public void prepareStatement(Connection connection, String query) throws SQLException {
+        if (preparedStatementMap.get(query) == null) {
+            preparedStatementMap.put(query, connection.prepareStatement(query));
+        }
+    }
+
+    public void prepareStatementGeneratedKeys(Connection connection, String query) throws SQLException {
+        if (preparedStatementMapGK.get(query) == null) {
+            preparedStatementMapGK.put(query, connection.prepareStatement(query,
+                    PreparedStatement.RETURN_GENERATED_KEYS));
+        }
+    }
+
     /**
      * Выполнить обычный запрос в БД
      * @param connection Соединение с БД
@@ -37,60 +61,69 @@ public class QueryExecutor {
 
     /**
      * Выполнить preparedStatement-запрос в БД
-     * @param connection Соединение с БД
-     * @param query SQL-запрос в текстовом виде
      * @param args Аргументы для preparedStatement
      * @param handler Обработчик результата
      * @return Результат
      * @throws SQLException
      */
-    public <T> T execQuery(Connection connection, String query, Map<Integer, Object> args, ResultHandler<T> handler) throws SQLException {
-        PreparedStatement stmt = connection.prepareStatement(query);
-        for (Map.Entry<Integer, Object> entry : args.entrySet()) {
-            stmt.setObject(entry.getKey(), entry.getValue());
+    public <T> T execQuery(String sql, Map<Integer, Object> args, ResultHandler<T> handler) throws SQLException {
+        PreparedStatement pstmt = preparedStatementMap.get(sql);
+        if (pstmt == null) {
+            throw new SQLException(String.format("Statement \"%s\" wasn't prepared", sql));
         }
-        ResultSet rs = stmt.executeQuery();
+        for (Map.Entry<Integer, Object> entry : args.entrySet()) {
+            pstmt.setObject(entry.getKey(), entry.getValue());
+        }
+        ResultSet rs = pstmt.executeQuery();
         T value = handler.handle(rs);
         rs.close();
-        stmt.close();
         return value;
     }
 
     /**
      * Выполнить preparedStatement-обновление БД без ответа
-     * @param connection Соединение с БД
-     * @param query SQL-запрос в текстовом виде
      * @param args Аргументы для preparedStatement
      * @throws SQLException
      */
-    public void execUpdate(Connection connection, String query, Map<Integer, Object> args) throws SQLException {
-        PreparedStatement stmt = connection.prepareStatement(query);
-        for (Map.Entry<Integer, Object> entry : args.entrySet()) {
-            stmt.setObject(entry.getKey(), entry.getValue());
+    public void execUpdate(String sql, Map<Integer, Object> args) throws SQLException {
+        PreparedStatement pstmt = preparedStatementMap.get(sql);
+        if (pstmt == null) {
+            throw new SQLException(String.format("Statement \"%s\" wasn't prepared", sql));
         }
-        stmt.executeUpdate();
-        stmt.close();
+        for (Map.Entry<Integer, Object> entry : args.entrySet()) {
+            pstmt.setObject(entry.getKey(), entry.getValue());
+        }
+        pstmt.executeUpdate();
     }
 
     /**
      * Выполнить preparedStatement-обновление БД с возвратом сгенерированных ключей
-     * @param connection Соединение с БД
-     * @param query SQL-запрос в текстовом виде
      * @param args Аргументы для preparedStatement
      * @param handler Обработчик результата
      * @return Идентификаторы вставленных данных
      * @throws SQLException
      */
-    public <T> T execUpdate(Connection connection, String query, Map<Integer, Object> args, ResultHandler<T> handler) throws SQLException {
-        PreparedStatement stmt = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
-        for (Map.Entry<Integer, Object> entry : args.entrySet()) {
-            stmt.setObject(entry.getKey(), entry.getValue());
+    public <T> T execUpdate(String sql, Map<Integer, Object> args, ResultHandler<T> handler) throws SQLException {
+        PreparedStatement pstmt = preparedStatementMapGK.get(sql);
+        if (pstmt == null) {
+            throw new SQLException(String.format("Statement \"%s\" wasn't prepared", sql));
         }
-        stmt.executeUpdate();
-        ResultSet rs = stmt.getGeneratedKeys();
+        for (Map.Entry<Integer, Object> entry : args.entrySet()) {
+            pstmt.setObject(entry.getKey(), entry.getValue());
+        }
+        pstmt.executeUpdate();
+        ResultSet rs = pstmt.getGeneratedKeys();
         T value = handler.handle(rs);
         rs.close();
-        stmt.close();
         return value;
+    }
+
+    public void close() throws SQLException {
+        for (Map.Entry<String, PreparedStatement> pair : preparedStatementMap.entrySet()) {
+            pair.getValue().close();
+        }
+        for (Map.Entry<String, PreparedStatement> pair : preparedStatementMapGK.entrySet()) {
+            pair.getValue().close();
+        }
     }
 }

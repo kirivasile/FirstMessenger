@@ -3,6 +3,7 @@ package com.github.kirivasile.technotrack.message;
 import com.github.kirivasile.technotrack.jdbc.QueryExecutor;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -39,7 +40,8 @@ public class DBMessageStore implements MessageStore {
             queryArgs.put(1, authorId);
             queryArgs.put(2, value);
             queryArgs.put(3, chat.getId());
-            executor.execUpdate(connection, sql, queryArgs);
+            executor.prepareStatement(connection, sql);
+            executor.execUpdate(sql, queryArgs);
         } catch (Exception e) {
             System.err.println("MessageStore: failed to write data " + e.getMessage());
         }
@@ -54,7 +56,8 @@ public class DBMessageStore implements MessageStore {
         String sql = "SELECT * FROM message WHERE chat_id = ? LIMIT 10000";
         Map<Integer, Object> queryArgs = new HashMap<>();
         queryArgs.put(1, chatId);
-        executor.execQuery(connection, sql, queryArgs, (r) -> {
+        executor.prepareStatement(connection, sql);
+        executor.execQuery(sql, queryArgs, (r) -> {
             while (r.next()) {
                 int authorId = r.getInt("author_id");
                 String value = r.getString("value");
@@ -91,5 +94,13 @@ public class DBMessageStore implements MessageStore {
             return null;
         });
         return messages;
+    }
+
+    /**
+     * @see MessageStore#close()
+     */
+    @Override
+    public void close() throws SQLException {
+        executor.close();
     }
 }

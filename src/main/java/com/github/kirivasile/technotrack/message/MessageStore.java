@@ -1,5 +1,6 @@
 package com.github.kirivasile.technotrack.message;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -37,4 +38,10 @@ public interface MessageStore {
      * @throws Exception
      */
     List<Message> getMessageByRegex(String regex) throws Exception;
+
+    /**
+     * Закрыть открытые ресурсы
+     * @throws SQLException
+     */
+    void close() throws SQLException;
 }

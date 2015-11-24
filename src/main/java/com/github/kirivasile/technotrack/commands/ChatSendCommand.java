@@ -68,7 +68,7 @@ public class ChatSendCommand implements Command {
                 Session destinationSession = manager.getSessionById(id);
                 success = AnswerMessage.Value.CHAT;
                 AnswerMessage answer = new AnswerMessage(messageFromUser, success);
-                answer.setFrom(String.format("Chat #%d, from: %d", chatId, authorId));
+                answer.setMessage(String.format("Chat #%d, from %d: %s", chatId, authorId, messageFromUser));
                 answer.setId(authorId);
                 DataOutputStream destinationWriter = destinationSession.getWriter();
                 destinationWriter.write(protocol.encode(answer));

@@ -2,11 +2,8 @@ package com.github.kirivasile.technotrack.authorization;
 
 import com.github.kirivasile.technotrack.jdbc.QueryExecutor;
 
-import java.io.*;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +44,9 @@ public class DBUserStore implements UserStore {
         }
         Map<Integer, Object> queryArgs = new HashMap<>();
         queryArgs.put(1, name);
-        return executor.execQuery(connection, "SELECT * FROM USERS where LOGIN = ?", queryArgs, (r) -> {
+        String sql = "SELECT * FROM USERS where LOGIN = ?";
+        executor.prepareStatement(connection, sql);
+        return executor.execQuery(sql, queryArgs, (r) -> {
             List<User> data = new ArrayList<>();
             while (r.next()) {
                 User u = new User(r.getString("login"), r.getString("password"), r.getString("nick"));
@@ -67,10 +66,11 @@ public class DBUserStore implements UserStore {
         if (id < 0) {
             return null;
         }
-        //return users.get(id);
         Map<Integer, Object> queryArgs = new HashMap<>();
         queryArgs.put(1, id);
-        return executor.execQuery(connection, "SELECT * FROM USERS where ID = ?", queryArgs, (r) -> {
+        String sql = "SELECT * FROM USERS where ID = ?";
+        executor.prepareStatement(connection, sql);
+        return executor.execQuery(sql, queryArgs, (r) -> {
             User result = new User();
             while (r.next()) {
                 result = new User(r.getString("login"), r.getString("password"), r.getString("nick"));
@@ -95,8 +95,9 @@ public class DBUserStore implements UserStore {
             queryArgs.put(1, user.getName());
             queryArgs.put(2, Integer.toString(user.getPassword().hashCode()));
             queryArgs.put(3, user.getName());
-            result = executor.execUpdate(connection, "INSERT INTO USERS (LOGIN, PASSWORD, NICK) " +
-                            "VALUES (?, ?, ? )", queryArgs, (r) -> {
+            String sql = "INSERT INTO USERS (LOGIN, PASSWORD, NICK) VALUES (?, ?, ? )";
+            executor.prepareStatementGeneratedKeys(connection, sql);
+            result = executor.execUpdate(sql, queryArgs, (r) -> {
                 if (r.next()) {
                     return r.getInt(1);
                 }
@@ -115,7 +116,9 @@ public class DBUserStore implements UserStore {
     @Override
     public List<User> getUserList() throws Exception{
         Map<Integer, Object> queryArgs = new HashMap<>();
-        return executor.execQuery(connection, "SELECT * FROM USERS LIMIT 10000", queryArgs, (r) -> {
+        String sql = "SELECT * FROM USERS LIMIT 10000";
+        executor.prepareStatement(connection, sql);
+        return executor.execQuery(sql, queryArgs, (r) -> {
             List<User> data = new ArrayList<>();
             while (r.next()) {
                 User u = new User(r.getString("login"), r.getString("password"), r.getString("nick"));
@@ -125,5 +128,13 @@ public class DBUserStore implements UserStore {
             }
             return data;
         });
+    }
+
+    /**
+     * @see UserStore#close()
+     */
+    @Override
+    public void close() throws SQLException {
+        executor.close();
     }
 }

@@ -3,8 +3,7 @@ package com.github.kirivasile.technotrack.message;
 import com.github.kirivasile.technotrack.jdbc.QueryExecutor;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -34,18 +33,20 @@ public class DBChatStore implements ChatStore {
         String sql = "INSERT INTO chats (temp) VALUES (?)";
         Map<Integer, Object> queryArgs = new HashMap<>();
         queryArgs.put(1, "temp");
-        chatId = executor.execUpdate(connection, sql, queryArgs, (r) -> {
+        executor.prepareStatementGeneratedKeys(connection, sql);
+        chatId = executor.execUpdate(sql, queryArgs, (r) -> {
             if (r.next()) {
                 return r.getInt(1);
             }
             return -1;
         });
         sql = "INSERT INTO userschat (user_id, chat_id) VALUES (?, ?)";
+        executor.prepareStatement(connection, sql);
         for (Integer userId : participants) {
             queryArgs.clear();
             queryArgs.put(1, userId);
             queryArgs.put(2, chatId);
-            executor.execUpdate(connection, sql, queryArgs);
+            executor.execUpdate(sql, queryArgs);
         }
         return chatId;
     }
@@ -83,7 +84,8 @@ public class DBChatStore implements ChatStore {
         String sql = "SELECT * FROM userschat WHERE chat_id = ?";
         Map<Integer, Object> queryArgs = new HashMap<>();
         queryArgs.put(1, id);
-        executor.execQuery(connection, sql, queryArgs, (r) -> {
+        executor.prepareStatement(connection, sql);
+        executor.execQuery(sql, queryArgs, (r) -> {
             while (r.next()) {
                 int userId = r.getInt("user_id");
                 result.addParticipant(userId);
@@ -91,5 +93,13 @@ public class DBChatStore implements ChatStore {
             return null;
         });
         return result;
+    }
+
+    /**
+     * @see ChatStore#close()
+     */
+    @Override
+    public void close() throws SQLException {
+        executor.close();
     }
 }

@@ -1,5 +1,6 @@
 package com.github.kirivasile.technotrack.authorization;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -43,4 +44,10 @@ public interface UserStore {
      * @throws Exception
      */
     List<User> getUserList() throws Exception;
+
+    /**
+     * Закрыть открытые ресурсы
+     * @throws SQLException
+     */
+    void close() throws SQLException;
 }
